@@ -12,6 +12,40 @@ import { TSContext } from './types';
 const sanitizeMaybeQuotedString = (str: string) =>
   str.replace(/^['"]|['"]$/g, '');
 
+const getMaybeSpecificToken = (
+  entryName: string,
+  defaultScale: keyof ParsedConfig,
+  config: ParsedConfig
+) => {
+  const sanitizedEntryName = sanitizeMaybeQuotedString(entryName);
+  const [, scale, token] = sanitizedEntryName.match(/^\$(\w+)\.(.+)$/) ?? [
+    '',
+    defaultScale,
+    sanitizedEntryName,
+  ];
+
+  if (!scale) return [undefined, undefined] as const;
+
+  const scaleObj = config[scale as keyof ParsedConfig] as
+    | ParsedConfig[keyof ParsedConfig]
+    | undefined;
+
+  if (!token) return [undefined, undefined] as const;
+
+  const val = scaleObj?.[
+    (token.startsWith('$') ? token : `$${token}`) as keyof typeof scaleObj
+  ] as string | undefined;
+
+  if (!val) return [undefined, undefined] as const;
+
+  return [scale, val] as const;
+};
+
+const toPascal = (str: string) => {
+  if (str.length < 1) return '';
+  return str[0]!.toUpperCase() + str.slice(1);
+};
+
 export const getLanguageServerHooks = ({
   config,
   defaultTheme,
@@ -77,14 +111,15 @@ export const getLanguageServerHooks = ({
           }
         }
       } else {
-        const c = config[type];
-        const value = c[sanitizedEntryName];
-        if (value) {
-          const scale = `${type[0]!.toUpperCase()}${type.slice(1)}Token`;
+        const [scale, value] = getMaybeSpecificToken(entryName, type, config);
+        if (scale && value) {
           original.documentation ??= [];
           original.documentation.unshift({
             kind: 'markdown',
-            text: makeTokenDescription(scale, value),
+            text:
+              scale === 'color'
+                ? makeColorTokenDescription(value)
+                : makeTokenDescription(toPascal(scale), value),
           });
         }
       }
@@ -133,13 +168,17 @@ export const getLanguageServerHooks = ({
           }
         }
       } else {
-        const c = config[type];
         for (const entry of original.entries) {
-          const value = c[sanitizeMaybeQuotedString(entry.name)];
-          if (value) {
+          const [scale, value] = getMaybeSpecificToken(
+            entry.name,
+            type,
+            config
+          );
+          logger(`tamagui token scale: ${scale} ${value}`);
+          if (scale && value) {
             entry.labelDetails = {
               detail: ' ' + value,
-              description: `${type[0]!.toUpperCase()}${type.slice(1)}Token`,
+              description: `${toPascal(scale)}Token`,
             };
           }
         }
