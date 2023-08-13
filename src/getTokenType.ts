@@ -39,33 +39,34 @@ export const getTokenTypeAtPosition = (
   if (nodeTree.length < 2) return undefined;
 
   const top = nodeTree.pop()!;
-  const parent = nodeTree.pop()!;
+  let parent = nodeTree.pop()!;
   const topType = typeChecker.getTypeAtLocation(top);
-  const isStringLiteral = topType.isStringLiteral();
+
+  // unwrap JSX expressions
+  if (topType.isStringLiteral() && parent.getText()[0] === '{') {
+    parent = nodeTree.pop()!;
+  } else if (top.getText() === '}' && parent.getText()[0] === '{') {
+    parent = nodeTree.pop()!;
+    parent = nodeTree.pop() ?? parent;
+  }
 
   let isMaybeTamaguiToken = false;
-  if (isStringLiteral) {
-    while (!isMaybeTamaguiToken && nodeTree.length > 0) {
-      const node = nodeTree.pop()!;
-      const nodeType = typeChecker.getTypeAtLocation(node);
-      if (typeChecker.typeToString(nodeType).startsWith('TamaguiComponent<')) {
-        isMaybeTamaguiToken = true;
-      }
-      if (typeChecker.typeToString(nodeType) === 'Element') {
-        isMaybeTamaguiToken = true;
-      }
+  while (!isMaybeTamaguiToken && nodeTree.length > 0) {
+    const node = nodeTree.pop()!;
+    const nodeType = typeChecker.getTypeAtLocation(node);
+    if (typeChecker.typeToString(nodeType).startsWith('TamaguiComponent<')) {
+      // is inside `styled()` call
+      isMaybeTamaguiToken = true;
     }
-  } else {
-    while (!isMaybeTamaguiToken && nodeTree.length > 0) {
-      const node = nodeTree.pop()!;
-      const nodeType = typeChecker.getTypeAtLocation(node);
-      if (typeChecker.typeToString(nodeType) === 'Element') {
-        isMaybeTamaguiToken = true;
-      }
+    if (typeChecker.typeToString(nodeType) === 'Element') {
+      // is maybe jsx prop
+      isMaybeTamaguiToken = true;
     }
   }
 
+  logger(`Parent text: <${parent.getText()}>`);
   logger(`Is maybe tamagui token: ${isMaybeTamaguiToken} <${top.getText()}>`);
+
   if (!isMaybeTamaguiToken) return undefined;
 
   // TODO:

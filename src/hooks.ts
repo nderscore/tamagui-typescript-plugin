@@ -1,4 +1,3 @@
-import { format } from 'path';
 import type ts from 'typescript/lib/tsserverlibrary';
 
 import { getTokenTypeAtPosition } from './getTokenType';
@@ -9,6 +8,9 @@ import {
 } from './metadata';
 import { readConfig } from './readConfig';
 import { TSContext } from './types';
+
+const sanitizeMaybeQuotedString = (str: string) =>
+  str.replace(/^['"]|['"]$/g, '');
 
 export const getLanguageServerHooks = ({
   config,
@@ -54,8 +56,10 @@ export const getLanguageServerHooks = ({
 
       logger(`tamagui token type: ${type}`);
 
+      const sanitizedEntryName = sanitizeMaybeQuotedString(entryName);
+
       if (type === 'color') {
-        const themeValue = config.themeColors[entryName];
+        const themeValue = config.themeColors[sanitizedEntryName];
         if (themeValue) {
           original.documentation ??= [];
           original.documentation.unshift({
@@ -63,7 +67,7 @@ export const getLanguageServerHooks = ({
             text: makeThemeTokenDescription(themeValue),
           });
         } else {
-          const colorValue = config.color[entryName];
+          const colorValue = config.color[sanitizedEntryName];
           if (colorValue) {
             original.documentation ??= [];
             original.documentation.unshift({
@@ -74,11 +78,11 @@ export const getLanguageServerHooks = ({
         }
       } else {
         const c = config[type];
-        const value = c[entryName];
+        const value = c[sanitizedEntryName];
         if (value) {
           const scale = `${type[0]!.toUpperCase()}${type.slice(1)}Token`;
           original.documentation ??= [];
-          original.documentation.push({
+          original.documentation.unshift({
             kind: 'markdown',
             text: makeTokenDescription(scale, value),
           });
@@ -109,7 +113,8 @@ export const getLanguageServerHooks = ({
 
       if (type === 'color') {
         for (const entry of original.entries) {
-          const themeValue = config.themeColors[entry.name];
+          const themeValue =
+            config.themeColors[sanitizeMaybeQuotedString(entry.name)];
           if (themeValue) {
             const defaultValue = themeValue[defaultTheme];
             entry.labelDetails = {
@@ -117,7 +122,8 @@ export const getLanguageServerHooks = ({
               description: 'ThemeToken',
             };
           } else {
-            const colorValue = config.color[entry.name];
+            const colorValue =
+              config.color[sanitizeMaybeQuotedString(entry.name)];
             if (colorValue) {
               entry.labelDetails = {
                 detail: ' ' + colorValue,
@@ -129,7 +135,7 @@ export const getLanguageServerHooks = ({
       } else {
         const c = config[type];
         for (const entry of original.entries) {
-          const value = c[entry.name];
+          const value = c[sanitizeMaybeQuotedString(entry.name)];
           if (value) {
             entry.labelDetails = {
               detail: ' ' + value,
