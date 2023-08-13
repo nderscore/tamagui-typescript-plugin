@@ -54,3 +54,7 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 1. Make sure your VSCode is configured to use typescript from your workspace:
 
    - Open VSCode `Command Palette` -> `Select Typescript Version...` -> `Use Workspace Version`
+
+## Contributing
+
+If you would like to contribute to this project, please see the [contributing guide](./CONTRIBUTING.md).
