@@ -46,17 +46,19 @@ export const getLanguageServerHooks = ({
 
       if (!original) return undefined;
 
+      logger(`tamagui completion details: $${position} @ ${fileName}`);
+
       const type = getTokenTypeAtPosition(fileName, position, ctx);
 
       if (!type) return original;
 
-      logger(`tamagui completion details: ${position} @ ${fileName}`);
+      logger(`tamagui token type: ${type}`);
 
       if (type === 'color') {
         const themeValue = config.themeColors[entryName];
         if (themeValue) {
           original.documentation ??= [];
-          original.documentation.push({
+          original.documentation.unshift({
             kind: 'markdown',
             text: makeThemeTokenDescription(themeValue),
           });
@@ -64,7 +66,7 @@ export const getLanguageServerHooks = ({
           const colorValue = config.color[entryName];
           if (colorValue) {
             original.documentation ??= [];
-            original.documentation.push({
+            original.documentation.unshift({
               kind: 'markdown',
               text: makeColorTokenDescription(colorValue),
             });
@@ -103,20 +105,24 @@ export const getLanguageServerHooks = ({
 
       if (!type) return original;
 
+      logger(`tamagui token type: ${type}`);
+
       if (type === 'color') {
         for (const entry of original.entries) {
           const themeValue = config.themeColors[entry.name];
           if (themeValue) {
             const defaultValue = themeValue[defaultTheme];
-            entry.labelDetails ??= {};
-            entry.labelDetails.detail = ' ' + defaultValue;
-            entry.labelDetails.description = 'ThemeToken';
+            entry.labelDetails = {
+              detail: ' ' + defaultValue,
+              description: 'ThemeToken',
+            };
           } else {
             const colorValue = config.color[entry.name];
             if (colorValue) {
-              entry.labelDetails ??= {};
-              entry.labelDetails.detail = ' ' + colorValue;
-              entry.labelDetails.description = 'ColorToken';
+              entry.labelDetails = {
+                detail: ' ' + colorValue,
+                description: 'ColorToken',
+              };
             }
           }
         }
@@ -125,11 +131,10 @@ export const getLanguageServerHooks = ({
         for (const entry of original.entries) {
           const value = c[entry.name];
           if (value) {
-            entry.labelDetails ??= {};
-            entry.labelDetails.detail = ' ' + value;
-            entry.labelDetails.description = `${type[0]!.toUpperCase()}${type.slice(
-              1
-            )}Token`;
+            entry.labelDetails = {
+              detail: ' ' + value,
+              description: `${type[0]!.toUpperCase()}${type.slice(1)}Token`,
+            };
           }
         }
       }

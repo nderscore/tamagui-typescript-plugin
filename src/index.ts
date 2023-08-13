@@ -6,13 +6,15 @@ import { readOptions } from './readOptions';
 import { TSContext, tss } from './types';
 
 const init = (modules: { typescript: tss }) => {
-  return {
+  const plugin: ts.server.PluginModule = {
     create(info: ts.server.PluginCreateInfo): ts.LanguageService {
       const program = info.languageService.getProgram()!;
 
       const logger = (msg: string | {}, type = 'info' as 'info' | 'error') => {
         const payload =
-          typeof msg === 'string' ? msg : `\n${JSON.stringify(msg, null, 2)}`;
+          typeof msg === 'string'
+            ? msg
+            : `(json)\n${JSON.stringify(msg, null, 2)}`;
         info.project.projectService.logger[type === 'info' ? 'info' : 'msg'](
           `TSTamagui:: ${payload}`
         );
@@ -46,7 +48,7 @@ const init = (modules: { typescript: tss }) => {
       const tamaguiConfig = readConfig(tamaguiConfigFilePath, ctx);
 
       if (!tamaguiConfig) {
-        logger(`Tamagui config was not parsed. Bailing.`);
+        logger.error(`Tamagui config was not parsed.`);
         return info.languageService;
       }
 
@@ -69,9 +71,38 @@ const init = (modules: { typescript: tss }) => {
 
       Object.assign(proxy, languageServerHooks);
 
+      logger(`Setting up watcher for <${tamaguiConfigFilePath}>`);
+
+      const watchHost = modules.typescript.createWatchCompilerHost(
+        [tamaguiConfigFilePath],
+        { resolveJsonModule: true },
+        modules.typescript.sys
+      );
+
+      watchHost.watchFile(tamaguiConfigFilePath, () => {
+        logger('tamagui.config.json was updated.');
+        const nextTamaguiConfig = readConfig(
+          tamaguiConfigFilePath,
+          getContext()
+        );
+        if (!nextTamaguiConfig) {
+          logger(`Failed to parse updated tamagui config.`);
+          return;
+        }
+        logger('Replacing tamagui config with new values.');
+        for (const key in Object.keys(tamaguiConfig)) {
+          delete tamaguiConfig[key as keyof typeof tamaguiConfig];
+        }
+        Object.assign(tamaguiConfig, nextTamaguiConfig);
+      });
+
+      const _watchProgram = modules.typescript.createWatchProgram(watchHost);
+
       return proxy;
     },
   };
+
+  return plugin;
 };
 
 export = init;

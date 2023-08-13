@@ -43,29 +43,30 @@ export const getTokenTypeAtPosition = (
   const topType = typeChecker.getTypeAtLocation(top);
   const isStringLiteral = topType.isStringLiteral();
 
-  let isTamaguiToken = false;
+  let isMaybeTamaguiToken = false;
   if (isStringLiteral) {
-    while (!isTamaguiToken && nodeTree.length > 0) {
+    while (!isMaybeTamaguiToken && nodeTree.length > 0) {
       const node = nodeTree.pop()!;
       const nodeType = typeChecker.getTypeAtLocation(node);
       if (typeChecker.typeToString(nodeType).startsWith('TamaguiComponent<')) {
-        isTamaguiToken = true;
-        break;
+        isMaybeTamaguiToken = true;
+      }
+      if (typeChecker.typeToString(nodeType) === 'Element') {
+        isMaybeTamaguiToken = true;
       }
     }
   } else {
-    while (!isTamaguiToken && nodeTree.length > 0) {
+    while (!isMaybeTamaguiToken && nodeTree.length > 0) {
       const node = nodeTree.pop()!;
       const nodeType = typeChecker.getTypeAtLocation(node);
       if (typeChecker.typeToString(nodeType) === 'Element') {
-        isTamaguiToken = true;
-        break;
+        isMaybeTamaguiToken = true;
       }
     }
   }
 
-  logger(`Is tamagui token: ${isTamaguiToken} <${top.getText()}>`);
-  if (!isTamaguiToken) return undefined;
+  logger(`Is maybe tamagui token: ${isMaybeTamaguiToken} <${top.getText()}>`);
+  if (!isMaybeTamaguiToken) return undefined;
 
   // TODO:
   // Make these checks more robust, more comprehendible, & support shorthands:
