@@ -1,0 +1,17 @@
+{
+  "include": ["src"],
+  "exclude": ["example"],
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "es2019",
+    "module": "CommonJS",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "rootDir": "./src"
+  }
+}

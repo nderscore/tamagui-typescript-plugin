@@ -1,0 +1,20 @@
+{
+  "name": "tamagui-typescript-plugin",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "./dist",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "4.1.0",
+    "@tamagui/core": "1.52.3",
+    "@types/color": "3.0.3",
+    "color": "4.2.3",
+    "typescript": "5.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "20.4.10",
+    "prettier": "3.0.1"
+  }
+}
