@@ -50,7 +50,13 @@ export const readConfig = (
   try {
     const jsonConfig = JSON.parse(tamaguiConfigFile)
       .tamaguiConfig as TamaguiInternalConfig;
-    const { tokens, themes } = jsonConfig;
+    const {
+      // TODO:
+      // fontSizeTokens,
+      shorthands,
+      tokens,
+      themes,
+    } = jsonConfig;
 
     const color = simplifyTokenMap(tokens.color);
     const space = simplifyTokenMap(tokens.space);
@@ -64,6 +70,7 @@ export const readConfig = (
       space,
       size,
       radius,
+      shorthands,
       themeColors,
       zIndex,
     } as const;
@@ -81,3 +88,5 @@ export const readConfig = (
     return undefined;
   }
 };
+
+export type ParsedConfig = Exclude<ReturnType<typeof readConfig>, undefined>;

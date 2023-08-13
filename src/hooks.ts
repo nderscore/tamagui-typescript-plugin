@@ -6,7 +6,7 @@ import {
   makeThemeTokenDescription,
   makeTokenDescription,
 } from './metadata';
-import { readConfig } from './readConfig';
+import { ParsedConfig } from './readConfig';
 import { TSContext } from './types';
 
 const sanitizeMaybeQuotedString = (str: string) =>
@@ -17,7 +17,7 @@ export const getLanguageServerHooks = ({
   defaultTheme,
   getContext,
 }: {
-  config: Exclude<ReturnType<typeof readConfig>, undefined>;
+  config: ParsedConfig;
   defaultTheme: string;
   getContext: () => TSContext;
 }) => {
@@ -50,7 +50,7 @@ export const getLanguageServerHooks = ({
 
       logger(`tamagui completion details: $${position} @ ${fileName}`);
 
-      const type = getTokenTypeAtPosition(fileName, position, ctx);
+      const type = getTokenTypeAtPosition(fileName, position, config, ctx);
 
       if (!type) return original;
 
@@ -105,7 +105,7 @@ export const getLanguageServerHooks = ({
 
       logger(`tamagui completion: ${position} @ ${fileName}`);
 
-      const type = getTokenTypeAtPosition(fileName, position, ctx);
+      const type = getTokenTypeAtPosition(fileName, position, config, ctx);
 
       if (!type) return original;
 

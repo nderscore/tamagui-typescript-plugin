@@ -1,5 +1,7 @@
-import type ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript/lib/tsserverlibrary';
 
+import { mapPropToToken } from './mapPropToToken';
+import { ParsedConfig } from './readConfig';
 import { TSContext } from './types';
 
 const getNodeTreeAtPosition = (
@@ -27,6 +29,7 @@ const getNodeTreeAtPosition = (
 export const getTokenTypeAtPosition = (
   fileName: string,
   position: number,
+  config: ParsedConfig,
   ctx: TSContext
 ) => {
   const { program, typeChecker, logger } = ctx;
@@ -38,73 +41,53 @@ export const getTokenTypeAtPosition = (
 
   if (nodeTree.length < 2) return undefined;
 
-  const top = nodeTree.pop()!;
-  let parent = nodeTree.pop()!;
-  const topType = typeChecker.getTypeAtLocation(top);
+  const originNode = nodeTree[nodeTree.length - 1];
+  let styledNode: ts.Node | undefined;
+  let jsxAttributeNode: ts.Node | undefined;
+  let propertyAssignmentNode: ts.Node | undefined;
 
-  // unwrap JSX expressions
-  if (topType.isStringLiteral() && parent.getText()[0] === '{') {
-    parent = nodeTree.pop()!;
-  } else if (top.getText() === '}' && parent.getText()[0] === '{') {
-    parent = nodeTree.pop()!;
-    parent = nodeTree.pop() ?? parent;
-  }
-
-  let isMaybeTamaguiToken = false;
-  while (!isMaybeTamaguiToken && nodeTree.length > 0) {
-    const node = nodeTree.pop()!;
+  let node: ts.Node | undefined;
+  while (!jsxAttributeNode && !styledNode && nodeTree.length > 0) {
+    node = nodeTree.pop()!;
+    if (node.kind === ts.SyntaxKind.PropertyAssignment) {
+      // is property assignment
+      propertyAssignmentNode = node;
+    }
+    if (
+      node.kind === ts.SyntaxKind.JsxAttribute ||
+      node.kind === ts.SyntaxKind.JsxSpreadAttribute
+    ) {
+      // is inside jsx attribute or jsx spread attribute
+      jsxAttributeNode = node;
+    }
     const nodeType = typeChecker.getTypeAtLocation(node);
     if (typeChecker.typeToString(nodeType).startsWith('TamaguiComponent<')) {
-      // is inside `styled()` call
-      isMaybeTamaguiToken = true;
-    }
-    if (typeChecker.typeToString(nodeType) === 'Element') {
-      // is maybe jsx prop
-      isMaybeTamaguiToken = true;
+      // is inside styled() call
+      styledNode = node;
     }
   }
 
-  logger(`Parent text: <${parent.getText()}>`);
-  logger(`Is maybe tamagui token: ${isMaybeTamaguiToken} <${top.getText()}>`);
+  const isTamaguiPropertyAssignment = !!(
+    propertyAssignmentNode &&
+    (jsxAttributeNode || styledNode)
+  );
 
-  if (!isMaybeTamaguiToken) return undefined;
+  const isJsxAttribute = !!jsxAttributeNode;
 
-  // TODO:
-  // Make these checks more robust, more comprehendible, & support shorthands:
+  logger(`Origin node <${originNode?.getText()}>`);
+  logger(`isTamaguiPropertyAssignment <${isTamaguiPropertyAssignment}>`);
+  logger(`isJsxAttribute <${isJsxAttribute}>`);
 
-  if (
-    /^(?:color|(?:background|shadow|outline|border(?:Top|Left|Right|Bottom)*)Color)[:=]/.test(
-      parent.getText()
-    )
-  ) {
-    return 'color';
-  }
+  if (!isTamaguiPropertyAssignment && !isJsxAttribute) return undefined;
 
-  if (
-    /^(?:space|(?:padding|margin)(?:Top|Left|Right|Bottom)?|gap|(?:row|column)Gap)[:=]/.test(
-      parent.getText()
-    )
-  ) {
-    return 'space';
-  }
+  const propMatch = isTamaguiPropertyAssignment
+    ? propertyAssignmentNode!.getText().match(/^(\w+):/)
+    : jsxAttributeNode!.getText().match(/^(\w+)=/);
+  const propName = propMatch?.[1] ?? '';
 
-  if (
-    /^(?:size|width|height|border(?:Top|Left|Right|Bottom)*Width)[:=]/.test(
-      parent.getText()
-    )
-  ) {
-    return 'size';
-  }
+  logger(`Prop name <${propName}>`);
 
-  if (
-    /^(?:border(?:Top|Left|Right|Bottom)*Radius)[:=]/.test(parent.getText())
-  ) {
-    return 'radius';
-  }
+  if (!propName) return undefined;
 
-  if (/^zIndex[:=]/.test(parent.getText())) {
-    return 'zIndex';
-  }
-
-  return undefined;
+  return mapPropToToken(propName, config);
 };
