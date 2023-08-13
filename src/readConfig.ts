@@ -3,13 +3,16 @@ import type { TamaguiInternalConfig } from '@tamagui/core';
 import { TSContext } from './types';
 
 const simplifyTokenMap = (
-  tokens: TamaguiInternalConfig['tokens'][keyof TamaguiInternalConfig['tokens']]
+  tokens: TamaguiInternalConfig['tokens'][keyof TamaguiInternalConfig['tokens']],
+  transformNumbersToPx = true
 ) => {
   return Object.fromEntries(
     Object.values(tokens).map((variable) => {
       return [
         variable.key as string,
-        typeof variable.val === 'number' ? `${variable.val}px` : variable.val,
+        transformNumbersToPx && typeof variable.val === 'number'
+          ? `${variable.val}px`
+          : `${variable.val}`,
       ];
     })
   ) as Record<string, string>;
@@ -53,7 +56,7 @@ export const readConfig = (
     const space = simplifyTokenMap(tokens.space);
     const size = simplifyTokenMap(tokens.size);
     const radius = simplifyTokenMap(tokens.radius);
-    const zIndex = simplifyTokenMap(tokens.zIndex);
+    const zIndex = simplifyTokenMap(tokens.zIndex, false);
     const themeColors = getThemeColors(themes);
 
     const config = {
