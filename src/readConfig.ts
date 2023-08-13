@@ -18,10 +18,24 @@ const simplifyTokenMap = (
   ) as Record<string, string>;
 };
 
+const componentThemePattern = /_[A-Z]/;
+
+const underscoreDepth = (str: string) => str.split('_').length - 1;
+
 const getThemeColors = (themes: TamaguiInternalConfig['themes']) => {
   const themeTokens: Record<string, Record<string, string>> = {};
 
-  for (const [themeName, theme] of Object.entries(themes)) {
+  const sortedThemes = Object.entries(themes);
+  sortedThemes.sort(([keyA], [keyB]) => {
+    const depthA = underscoreDepth(keyA);
+    const depthB = underscoreDepth(keyB);
+    if (depthA === depthB) return keyA.localeCompare(keyB);
+    return depthA - depthB;
+  });
+
+  for (const [themeName, theme] of sortedThemes) {
+    if (componentThemePattern.test(themeName)) continue;
+
     for (const [key, variable] of Object.entries(theme)) {
       if (key === 'id') continue;
       const $key = `$${key}`;
