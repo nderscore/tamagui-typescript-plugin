@@ -3,11 +3,10 @@ import * as path from 'path';
 import { TSContext } from './types';
 
 export const readOptions = ({ info, modules }: TSContext) => {
-  const { configFilePath = 'apps/next', defaultTheme = 'light' } =
-    info.config as {
-      configFilePath?: string;
-      defaultTheme?: string;
-    };
+  const { pathToApp = 'apps/next', defaultTheme = 'light' } = info.config as {
+    pathToApp?: string;
+    defaultTheme?: string;
+  };
 
   const rootDir = path.join(
     modules.typescript.sys.getExecutingFilePath(),
@@ -15,9 +14,7 @@ export const readOptions = ({ info, modules }: TSContext) => {
   );
 
   const tamaguiConfigFilePath = path.join(
-    path.isAbsolute(configFilePath)
-      ? configFilePath
-      : path.join(rootDir, configFilePath),
+    path.isAbsolute(pathToApp) ? pathToApp : path.join(rootDir, pathToApp),
     './.tamagui/tamagui.config.json'
   );
 

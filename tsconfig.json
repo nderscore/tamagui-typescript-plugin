@@ -1,6 +1,4 @@
 {
-  "include": ["src"],
-  "exclude": ["example"],
   "compilerOptions": {
     "outDir": "./dist",
     "target": "es2019",
@@ -13,5 +11,6 @@
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "rootDir": "./src"
-  }
+  },
+  "include": ["src"]
 }

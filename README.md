@@ -1,44 +1,56 @@
-## Tamagui Typescript Language Server Plugin
+# @nderscore/tamagui-typescript-plugin
 
-⚠️ This is a prototype. Beware! ⚠️
+Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
-### Dev setup
+## Features
 
-1. Use `yalc` / `npm link` / etc to link this project folder to your tamagui project.
+- Show Tamagui theme/token values in TypeScript autocomplete suggestions
 
-1. Use your tamagui project's workspace typescript:
+- Graphical previews for color and theme tokens
+
+- Automatically reloads when your config is updated by the Tamagui compiler
+
+### Screenshots
+
+![Theme Token Screenshot](./docs/screenshot_autocomplete_theme.png)
+
+![Color Token Screenshot](./docs/screenshot_autocomplete_color.png)
+
+![Space Token Screenshot](./docs/screenshot_autocomplete_space.png)
+
+## Setup
+
+1. Install `@nderscore/tamagui-typescript-plugin` package in your project"
+
+   ```sh
+   yarn add @nderscore/tamagui-typescript-plugin
+   # or
+   pnpm add @nderscore/tamagui-typescript-plugin
+   # or
+   npm add @nderscore/tamagui-typescript-plugin
+   ```
+
+1. Add plugin to your `tsconfig.json` with settings:
+
+   ```json
+   {
+     "compilerOptions": {
+       // ...
+       "plugins": [
+         {
+           "name": "@nderscore/tamagui-typescript-plugin",
+
+           // fill in relative or absolute path to a tamagui app here (parent folder of .tamagui)
+           "pathToApp": "apps/next",
+
+           // choose default theme for inline values of theme tokens
+           "defaultTheme": "light"
+         }
+       ]
+     }
+   }
+   ```
+
+1. Make sure your VSCode is configured to use typescript from your workspace:
 
    - Open VSCode `Command Palette` -> `Select Typescript Version...` -> `Use Workspace Version`
-
-1. Add this to your tamagui project's `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    // ...
-    "plugins": [
-      {
-        "name": "tamagui-typescript-plugin",
-        "configFilePath": "apps/next", // fill in relative or absolute path to a tamagui app here (parent folder of .tamagui)
-        "defaultTheme": "light" // choose default theme for inline colors
-      }
-    ]
-  }
-}
-```
-
-### Dev instructions
-
-1. Run `pnpm build`
-
-1. Refresh your tamagui project vscode window / TS server
-
-1. Trigger an autocomplete to appear
-
-1. Check logs:
-
-   - Open VSCode `Command Palette` -> `Open TS Server Logs...`
-
-   - `ctrl/cmd + f` -> `TSTamagui::`
-
-1. Made a change? Start over from 1 😅
