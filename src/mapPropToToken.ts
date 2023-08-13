@@ -17,5 +17,5 @@ export const mapPropToToken = (prop: string, config: ParsedConfig) => {
     }
   }
 
-  return undefined;
+  return 'space';
 };
