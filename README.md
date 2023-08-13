@@ -20,7 +20,7 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
 ## Setup
 
-1. Install `@nderscore/tamagui-typescript-plugin` package in your project"
+1. Install `@nderscore/tamagui-typescript-plugin` package in your project:
 
    ```sh
    yarn add @nderscore/tamagui-typescript-plugin
