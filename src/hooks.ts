@@ -18,11 +18,9 @@ const getMaybeSpecificToken = (
   config: ParsedConfig
 ) => {
   const sanitizedEntryName = sanitizeMaybeQuotedString(entryName);
-  const [, scale, token] = sanitizedEntryName.match(/^\$(\w+)\.(.+)$/) ?? [
-    '',
-    defaultScale,
-    sanitizedEntryName,
-  ];
+  const [, scale, token] = sanitizedEntryName.match(
+    /^\$([a-zA-Z]\w+)\.(.+)$/
+  ) ?? ['', defaultScale, sanitizedEntryName];
 
   if (!scale) return [undefined, undefined] as const;
 
