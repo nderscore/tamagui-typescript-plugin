@@ -12,6 +12,17 @@ import { TSContext } from './types';
 const sanitizeMaybeQuotedString = (str: string) =>
   str.replace(/^['"]|['"]$/g, '');
 
+// sort numeric keys by value, sort negative numbers last
+const getSortText = (sortText: string) => {
+  return sortText
+    .replace(/^\$(-?)(\d+|true)/, (_, sign, num) => {
+      return `$${sign ? '1' : '0'}${num.padStart(9, '0')}`;
+    })
+    .replace(/^\$([A-Za-z]\w+)\.(-?)(\d+|true)/, (_, scale, sign, num) => {
+      return `$${scale}.${sign ? '1' : '0'}${num.padStart(9, '0')}`;
+    });
+};
+
 const getMaybeSpecificToken = (
   entryName: string,
   defaultScale: keyof ParsedConfig,
@@ -179,6 +190,8 @@ export const getLanguageServerHooks = ({
             const isColor = scale === 'color';
             if (isColor) {
               entry.kindModifiers = 'color';
+            } else {
+              entry.sortText = getSortText(entry.name);
             }
             entry.labelDetails = {
               detail: ' ' + value,
