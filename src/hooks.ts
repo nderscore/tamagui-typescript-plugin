@@ -149,7 +149,8 @@ export const getLanguageServerHooks = ({
           const themeValue =
             config.themeColors[sanitizeMaybeQuotedString(entry.name)];
           if (themeValue) {
-            const defaultValue = themeValue[defaultTheme];
+            const defaultValue = themeValue[defaultTheme]!;
+            entry.kindModifiers = 'color';
             entry.labelDetails = {
               detail: ' ' + defaultValue,
               description: 'ThemeToken',
@@ -158,6 +159,7 @@ export const getLanguageServerHooks = ({
             const colorValue =
               config.color[sanitizeMaybeQuotedString(entry.name)];
             if (colorValue) {
+              entry.kindModifiers = 'color';
               entry.labelDetails = {
                 detail: ' ' + colorValue,
                 description: 'ColorToken',
@@ -174,6 +176,10 @@ export const getLanguageServerHooks = ({
           );
           logger(`tamagui token scale: ${scale} ${value}`);
           if (scale && value) {
+            const isColor = scale === 'color';
+            if (isColor) {
+              entry.kindModifiers = 'color';
+            }
             entry.labelDetails = {
               detail: ' ' + value,
               description: `${toPascal(scale)}Token`,
