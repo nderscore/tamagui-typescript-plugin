@@ -55,6 +55,36 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
    - Open VSCode `Command Palette` -> `Select Typescript Version...` -> `Use Workspace Version`
 
+### Usage in Expo-only (no-Next.js) Tamagui projects
+
+Currently, the `@tamagui/babel-plugin` does not generate a `.tamagui` directory with your configuration cached inside.
+
+As a temporary workaround, you can generate it manually:
+
+#### Expo workaround
+
+1. Add `@tamagui/static` to your project:
+
+   ```
+   yarn add @tamagui/static
+   ```
+
+1. Create a script `generate-tamagui-json.js` and fill in with your settings if needed:
+
+   ```js name='generate-tamagui-json.js'
+   // generate-tamagui-json.js
+   const { loadTamagui } = require('@tamagui/static');
+
+   loadTamagui({
+     config: 'tamagui.config.ts',
+     components: ['tamagui'],
+   });
+   ```
+
+1. Execute `node generate-tamagui-json.js` to generate a `.tamagui` directory in your Expo project folder.
+
+   This script will need to be ran manually after changing your theme/tokens.
+
 ## Contributing
 
 If you would like to contribute to this project, please see the [contributing guide](./CONTRIBUTING.md).
