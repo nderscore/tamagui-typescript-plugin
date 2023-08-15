@@ -41,8 +41,8 @@ export const getCompletionsAtPosition = (
 
   logger(`token type <${type}>`);
 
-  if (type === 'color') {
-    for (const entry of original.entries) {
+  for (const entry of original.entries) {
+    if (type === 'color') {
       const themeValue =
         config.themeColors[sanitizeMaybeQuotedString(entry.name)];
       if (themeValue) {
@@ -54,31 +54,21 @@ export const getCompletionsAtPosition = (
           detail: ' ' + defaultValue,
           description: 'ThemeToken',
         };
-      } else {
-        const colorValue = config.color[sanitizeMaybeQuotedString(entry.name)];
-        if (colorValue) {
-          entry.kindModifiers = 'color';
-          entry.labelDetails = {
-            detail: ' ' + colorValue,
-            description: 'ColorToken',
-          };
-        }
+        continue;
       }
     }
-  } else {
-    for (const entry of original.entries) {
-      const [scale, value] = getMaybeSpecificToken(entry.name, type, config);
-      if (scale && value) {
-        const isColor = scale === 'color';
-        if (isColor) {
-          entry.kindModifiers = 'color';
-        }
-        entry.sortText = getSortText(entry.name);
-        entry.labelDetails = {
-          detail: ' ' + value,
-          description: `${toPascal(scale)}Token`,
-        };
+
+    const [scale, value] = getMaybeSpecificToken(entry.name, type, config);
+    if (scale && value) {
+      const isColor = scale === 'color';
+      if (isColor) {
+        entry.kindModifiers = 'color';
       }
+      entry.sortText = getSortText(entry.name);
+      entry.labelDetails = {
+        detail: ' ' + value,
+        description: `${toPascal(scale)}Token`,
+      };
     }
   }
 

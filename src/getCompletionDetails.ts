@@ -55,6 +55,7 @@ export const getCompletionDetails = (
 
   const sanitizedEntryName = sanitizeMaybeQuotedString(entryName);
 
+  let found = false;
   if (type === 'color') {
     const themeValue = config.themeColors[sanitizedEntryName];
     if (themeValue) {
@@ -63,28 +64,22 @@ export const getCompletionDetails = (
         kind: 'markdown',
         text: makeThemeTokenDescription(themeValue),
       });
-    } else {
-      const colorValue = config.color[sanitizedEntryName];
-      if (colorValue) {
-        original.documentation ??= [];
-        original.documentation.unshift({
-          kind: 'markdown',
-          text: makeColorTokenDescription(colorValue),
-        });
-      }
+      found = true;
     }
-  } else {
-    const [scale, value] = getMaybeSpecificToken(entryName, type, config);
-    if (scale && value) {
-      original.documentation ??= [];
-      original.documentation.unshift({
-        kind: 'markdown',
-        text:
-          scale === 'color'
-            ? makeColorTokenDescription(value)
-            : makeTokenDescription(toPascal(scale), value),
-      });
-    }
+  }
+
+  if (found) return original;
+
+  const [scale, value] = getMaybeSpecificToken(entryName, type, config);
+  if (scale && value) {
+    original.documentation ??= [];
+    original.documentation.unshift({
+      kind: 'markdown',
+      text:
+        scale === 'color'
+          ? makeColorTokenDescription(value)
+          : makeTokenDescription(toPascal(scale), value),
+    });
   }
 
   return original;
