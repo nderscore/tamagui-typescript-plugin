@@ -10,11 +10,21 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
 - Automatically reloads when your config is updated by the Tamagui compiler
 
+- Smart sorting of autocomplete suggestions:
+
+  - Tokens with numbers get sorted in numeric order
+
+  - Negative space tokens get sorted after postive ones
+
+  - Theme tokens always come before any Color tokens
+
+  - Unprefixed tokens sort before scale-specific tokens (`$scale.token`)
+
 ### Screenshots
 
 ![Theme Token Screenshot](./docs/screenshot_autocomplete_theme.png)
 
-![Color Token Screenshot](./docs/screenshot_autocomplete_color.png)
+![Translucent Color Screenshot](./docs/screenshot_autocomplete_translucent.png)
 
 ![Space Token Screenshot](./docs/screenshot_autocomplete_space.png)
 
