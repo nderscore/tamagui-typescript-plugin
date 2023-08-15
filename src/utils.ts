@@ -1,7 +1,7 @@
 import { ParsedConfig } from './readConfig';
 
-// Detect specific scale tokens ($foo.bar)
-const specificTokenPattern = /^\$[A-Za-z]\w+\./;
+// Detect specific scale tokens
+const specificTokenPattern = /^\$(color|radius|size|space|zIndex)\.(.+)$/;
 
 /**
  * Reformats a token string to be used for sorting
@@ -11,14 +11,14 @@ const specificTokenPattern = /^\$[A-Za-z]\w+\./;
  */
 export const getSortText = (sortText: string) => {
   let text = sortText;
-  if (specificTokenPattern.test(text)) {
-    // add prefix to specific tokens to sort them last:
-    text = `__${text}`;
-  }
+  // add prefix to specific tokens to sort them last:
+  text = text.replace(specificTokenPattern, '$zzzzzzzzzz$1.$2');
   // add prefix to numeric portions of tokens to sort them numerically:
-  text = text.replace(/(-?)(\d+|\btrue$)/, (_, sign, num) => {
-    return `${sign ? '1' : '0'}${num.padStart(9, '0')}`;
+  text = text.replace(/(-?)(\d+)/g, (_, sign, num) => {
+    return `${sign ? '1' : '0'}${num.padStart(12, '0')}`;
   });
+  // special case for negative text tokens like $-true
+  text = text.replace(/(^\$|\.)-(\w.+)$/, '$1z$2');
   return text;
 };
 
@@ -32,9 +32,11 @@ export const getMaybeSpecificToken = (
   config: ParsedConfig
 ) => {
   const sanitizedEntryName = sanitizeMaybeQuotedString(entryName);
-  const [, scale, token] = sanitizedEntryName.match(
-    /^\$([a-zA-Z]\w+)\.(.+)$/
-  ) ?? ['', defaultScale, sanitizedEntryName];
+  const [, scale, token] = sanitizedEntryName.match(specificTokenPattern) ?? [
+    null,
+    defaultScale,
+    sanitizedEntryName,
+  ];
 
   if (!scale || !token) return [undefined, undefined] as const;
 

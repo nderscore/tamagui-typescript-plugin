@@ -55,7 +55,6 @@ export const getCompletionDetails = (
 
   const sanitizedEntryName = sanitizeMaybeQuotedString(entryName);
 
-  let found = false;
   if (type === 'color') {
     const themeValue = config.themeColors[sanitizedEntryName];
     if (themeValue) {
@@ -64,11 +63,9 @@ export const getCompletionDetails = (
         kind: 'markdown',
         text: makeThemeTokenDescription(themeValue),
       });
-      found = true;
+      return original;
     }
   }
-
-  if (found) return original;
 
   const [scale, value] = getMaybeSpecificToken(entryName, type, config);
   if (scale && value) {
