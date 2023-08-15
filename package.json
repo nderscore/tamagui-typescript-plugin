@@ -15,13 +15,13 @@
     "build": "tsc",
     "clean": "rm -rf ./dist",
     "cleanbuild": "pnpm run clean && pnpm run build",
-    "changelog:major": "changelog -M",
-    "changelog:minor": "changelog -m",
-    "changelog:patch": "changelog -p",
-    "changelog:commit": "prettier -w CHANGELOG.md add CHANGELOG.md && git commit -m 'Update CHANGELOG.md'",
-    "release:major": "pnpm changelog:major && pnpm changelog:commit && pnpm version major && git push origin && git push origin --tags",
-    "release:minor": "pnpm changelog:minor && pnpm changelog:commit && pnpm version minor && git push origin && git push origin --tags",
-    "release:patch": "pnpm changelog:patch && pnpm changelog:commit && pnpm version patch && git push origin && git push origin --tags"
+    "changelog:major": "changelog -M --exclude 'chore,docs,ci'",
+    "changelog:minor": "changelog -m --exclude 'chore,docs,ci'",
+    "changelog:patch": "changelog -p --exclude 'chore,docs,ci'",
+    "changelog:commit": "prettier -w CHANGELOG.md add CHANGELOG.md && git commit -m 'docs: Update CHANGELOG.md'",
+    "release:major": "pnpm changelog:major && pnpm changelog:commit && pnpm version major",
+    "release:minor": "pnpm changelog:minor && pnpm changelog:commit && pnpm version minor",
+    "release:patch": "pnpm changelog:patch && pnpm changelog:commit && pnpm version patch"
   },
   "dependencies": {
     "color": "4.2.3"
