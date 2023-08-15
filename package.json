@@ -18,7 +18,7 @@
     "changelog:major": "changelog -M --exclude 'chore,docs,ci'",
     "changelog:minor": "changelog -m --exclude 'chore,docs,ci'",
     "changelog:patch": "changelog -p --exclude 'chore,docs,ci'",
-    "changelog:commit": "prettier -w CHANGELOG.md add CHANGELOG.md && git commit -m 'docs: Update CHANGELOG.md'",
+    "changelog:commit": "prettier -w CHANGELOG.md && git add CHANGELOG.md && git commit -m 'docs: Update CHANGELOG.md'",
     "release:major": "pnpm changelog:major && pnpm changelog:commit && pnpm version major",
     "release:minor": "pnpm changelog:minor && pnpm changelog:commit && pnpm version minor",
     "release:patch": "pnpm changelog:patch && pnpm changelog:commit && pnpm version patch"
