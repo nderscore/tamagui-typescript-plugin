@@ -14,7 +14,14 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf ./dist",
-    "cleanbuild": "pnpm run clean && pnpm run build"
+    "cleanbuild": "pnpm run clean && pnpm run build",
+    "changelog:major": "changelog -M",
+    "changelog:minor": "changelog -m",
+    "changelog:patch": "changelog -p",
+    "changelog:commit": "prettier -w CHANGELOG.md add CHANGELOG.md && git commit -m 'Update CHANGELOG.md'",
+    "release:major": "pnpm changelog:major && pnpm changelog:commit && pnpm version major && git push origin && git push origin --tags",
+    "release:minor": "pnpm changelog:minor && pnpm changelog:commit && pnpm version minor && git push origin && git push origin --tags",
+    "release:patch": "pnpm changelog:patch && pnpm changelog:commit && pnpm version patch && git push origin && git push origin --tags"
   },
   "dependencies": {
     "color": "4.2.3"
@@ -30,6 +37,7 @@
     "@tamagui/helpers": "1.52.3",
     "@types/color": "3.0.3",
     "@types/node": "20.4.10",
+    "generate-changelog": "1.8.0",
     "prettier": "3.0.1",
     "typescript": "5.1.6"
   }
