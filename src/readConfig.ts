@@ -2,6 +2,9 @@ import type { TamaguiInternalConfig } from '@tamagui/core';
 
 import { TSContext } from './types';
 
+/**
+ * Simple utility to transform a token map into a simple key-value map
+ */
 const simplifyTokenMap = (
   tokens: TamaguiInternalConfig['tokens'][keyof TamaguiInternalConfig['tokens']],
   transformNumbersToPx = true
@@ -18,10 +21,18 @@ const simplifyTokenMap = (
   ) as Record<string, string>;
 };
 
+// Ignore pattern for component themes
 const componentThemePattern = /_[A-Z]/;
 
+/**
+ * Get count of underscores in a string
+ */
 const underscoreDepth = (str: string) => str.split('_').length - 1;
 
+/**
+ * Utility to transform a record of themes into a record of theme tokens
+ * with the theme names as keys and the token values as values
+ */
 const getThemeColors = (themes: TamaguiInternalConfig['themes']) => {
   const themeTokens: Record<string, Record<string, string>> = {};
 
@@ -48,6 +59,9 @@ const getThemeColors = (themes: TamaguiInternalConfig['themes']) => {
   return themeTokens;
 };
 
+/**
+ * Read and process the tamagui config file into a simpler format
+ */
 export const readConfig = (
   tamaguiConfigFilePath: string,
   { modules, logger }: TSContext

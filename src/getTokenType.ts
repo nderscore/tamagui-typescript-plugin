@@ -4,6 +4,9 @@ import { mapPropToToken } from './mapPropToToken';
 import { ParsedConfig } from './readConfig';
 import { TSContext } from './types';
 
+/**
+ * Create a stack of all the nodes at a given position
+ */
 const getNodeTreeAtPosition = (
   node: ts.Node,
   pos: number,
@@ -26,6 +29,20 @@ const getNodeTreeAtPosition = (
   return tree;
 };
 
+/**
+ * Determines whether to show tamagui completions at a given position and if
+ * so, which type of tokens to show.
+ *
+ * Walks up the AST to determine whether the cursor position either is or is
+ * a descendant of a node that is one of the following:
+ *
+ * - A property assignment inside a Tamagui styled() call
+ * - A property assignment inside a JSX expression
+ * - Or a JSX attribute
+ *
+ * If a valid property assignment or JSX attribute is found, it's name
+ * determines the token type based on the property name.
+ */
 export const getTokenTypeAtPosition = (
   fileName: string,
   position: number,

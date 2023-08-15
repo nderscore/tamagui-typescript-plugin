@@ -2,6 +2,9 @@ import * as path from 'path';
 
 import { TSContext } from './types';
 
+/**
+ * Read options passed in from the tsconfig.json file
+ */
 export const readOptions = ({ info, modules }: TSContext) => {
   const { pathToApp = 'apps/next', defaultTheme = 'light' } = info.config as {
     pathToApp?: string;

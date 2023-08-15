@@ -2,6 +2,9 @@ import { tokenCategories } from '@tamagui/helpers';
 
 import { ParsedConfig } from './readConfig';
 
+/**
+ * Maps a property or shorthand to a token category
+ */
 export const mapPropToToken = (prop: string, config: ParsedConfig) => {
   const realProp =
     (config.shorthands[prop as keyof typeof config.shorthands] as
