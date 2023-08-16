@@ -57,15 +57,15 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
    ```json
    {
      "compilerOptions": {
-       // ...
        "plugins": [
          {
            "name": "@nderscore/tamagui-typescript-plugin",
-
-           // fill in relative or absolute path to a tamagui app here (parent folder of .tamagui)
+           // all settings are optional, the defaults are shown below as an example:
+           //
+           // relative or absolute path to a tamagui app (parent folder of .tamagui)
            "pathToApp": "apps/next",
-
-           // choose default theme for inline values of theme tokens
+           //
+           // the default theme to show for theme tokens when inlined
            "defaultTheme": "light"
          }
        ]
@@ -73,17 +73,27 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
    }
    ```
 
+   **For monorepos:**
+
+   In a monorepo, like the tamagui starter template, you may have multiple `tsconfig.json` for each of your workspace packages. If your packages' configurations extend from one or more base configurations, you should add the plugin to each one of those base configs and not to the individual packages.
+
+   For the tamagui starter project, the base tsconfigs are:
+
+   - `tsconfig.json`
+   - `tsconfig.base.json`
+   - `apps/next/tsconfig.json`
+
 1. Make sure your VSCode is configured to use typescript from your workspace:
 
    - Open VSCode `Command Palette` -> `Select Typescript Version...` -> `Use Workspace Version`
 
 ### Usage in Expo-only (no-Next.js) Tamagui projects
 
-Currently, the `@tamagui/babel-plugin` does not generate a `.tamagui` directory with your configuration cached inside.
+Currently, the `@tamagui/babel-plugin` may not generate a `.tamagui` directory with your configuration cached inside.
 
-As a temporary workaround, you can generate it manually:
+If you encounter this issue, you can use a temporary workaround to generate it manually:
 
-#### Expo workaround
+#### Expo-only workaround
 
 1. Add `@tamagui/static` to your project:
 
@@ -93,7 +103,7 @@ As a temporary workaround, you can generate it manually:
 
 1. Create a script `generate-tamagui-json.js` and fill in with your settings if needed:
 
-   ```js name='generate-tamagui-json.js'
+   ```js
    // generate-tamagui-json.js
    const { loadTamagui } = require('@tamagui/static');
 
