@@ -1,3 +1,9 @@
+#### 0.3.1 (2023-08-16)
+
+##### Bug Fixes
+
+- fix quick info on JSX props ([2404d22f](https://github.com/nderscore/tamagui-typescript-plugin/commit/2404d22ff7e3c85911b77d0f29fa0dbbf20f9429))
+
 ### 0.3.0 (2023-08-16)
 
 ##### New Features
