@@ -111,7 +111,12 @@ const getTokenAtPosition = (
 
   if (!propName) return undefined;
 
-  return [propName, valueNode?.getText(), valueNode] as const;
+  const valueText =
+    valueNode?.kind === ts.SyntaxKind.JsxAttribute
+      ? valueNode?.getText().replace(/^\w+=/, '')
+      : valueNode?.getText();
+
+  return [propName, valueText, valueNode] as const;
 };
 
 export const getTokenType = (

@@ -85,7 +85,6 @@ export const getLanguageServerHooks = ({
         fileName,
         position
       );
-      ctx.logger('HHUHH???????');
       return getQuickInfo(original, {
         fileName,
         position,
