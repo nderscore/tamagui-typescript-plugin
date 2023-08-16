@@ -42,8 +42,11 @@ const makeTable = (rows: Record<string, string>[]) => {
 
 export const makeTokenDescription = (scale: string, value: string) => {
   return makeTable([
-    { value: 'Value', scale: 'Scale' },
-    { value, scale },
+    { scale: 'Scale', value: 'Value' },
+    {
+      scale: `**${scale}**`,
+      value,
+    },
   ]);
 };
 

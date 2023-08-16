@@ -1,7 +1,8 @@
 import type ts from 'typescript/lib/tsserverlibrary';
 
 import { getCompletionDetails } from './getCompletionDetails';
-import { getCompletionsAtPosition } from './getCompletions';
+import { getCompletions } from './getCompletions';
+import { getQuickInfo } from './getQuickInfo';
 import { ParsedConfig } from './readConfig';
 import { TSContext } from './types';
 
@@ -67,7 +68,7 @@ export const getLanguageServerHooks = ({
 
       if (!original) return undefined;
 
-      return getCompletionsAtPosition(original, {
+      return getCompletions(original, {
         fileName,
         position,
         options,
@@ -76,6 +77,24 @@ export const getLanguageServerHooks = ({
         defaultTheme,
       });
     },
+    //
+    getQuickInfoAtPosition(fileName, position) {
+      const ctx = getContext();
+      const { info } = ctx;
+      const original = info.languageService.getQuickInfoAtPosition(
+        fileName,
+        position
+      );
+      ctx.logger('HHUHH???????');
+      return getQuickInfo(original, {
+        fileName,
+        position,
+        ctx,
+        config,
+        defaultTheme,
+      });
+    },
+    //
   };
 
   return languageServerHooks;

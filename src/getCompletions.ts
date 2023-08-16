@@ -1,6 +1,6 @@
 import type ts from 'typescript/lib/tsserverlibrary';
 
-import { getTokenTypeAtPosition } from './getTokenType';
+import { getTokenType } from './getTokens';
 import { ParsedConfig } from './readConfig';
 import { TSContext } from './types';
 import {
@@ -13,7 +13,7 @@ import {
 /**
  * Hook to augment completion results with tamagui tokens
  */
-export const getCompletionsAtPosition = (
+export const getCompletions = (
   original: ts.WithMetadata<ts.CompletionInfo>,
   {
     fileName,
@@ -35,7 +35,7 @@ export const getCompletionsAtPosition = (
 
   logger(`calculating tamagui completions <$${position}@${fileName}>`);
 
-  const type = getTokenTypeAtPosition(fileName, position, config, ctx);
+  const type = getTokenType(fileName, position, config, ctx);
 
   if (!type) return original;
 

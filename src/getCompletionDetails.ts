@@ -1,6 +1,6 @@
 import type ts from 'typescript/lib/tsserverlibrary';
 
-import { getTokenTypeAtPosition } from './getTokenType';
+import { getTokenType } from './getTokens';
 import {
   makeColorTokenDescription,
   makeThemeTokenDescription,
@@ -47,7 +47,7 @@ export const getCompletionDetails = (
 
   logger(`calculating tamagui completion details <$${position}@${fileName}>`);
 
-  const type = getTokenTypeAtPosition(fileName, position, config, ctx);
+  const type = getTokenType(fileName, position, config, ctx);
 
   if (!type) return original;
 

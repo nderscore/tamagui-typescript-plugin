@@ -43,10 +43,9 @@ const getNodeTreeAtPosition = (
  * If a valid property assignment or JSX attribute is found, it's name
  * determines the token type based on the property name.
  */
-export const getTokenTypeAtPosition = (
+const getTokenAtPosition = (
   fileName: string,
   position: number,
-  config: ParsedConfig,
   ctx: TSContext
 ) => {
   const { program, typeChecker, logger } = ctx;
@@ -62,10 +61,16 @@ export const getTokenTypeAtPosition = (
   let styledNode: ts.Node | undefined;
   let jsxAttributeNode: ts.Node | undefined;
   let propertyAssignmentNode: ts.Node | undefined;
+  let valueNode: ts.Node | undefined;
 
   let node: ts.Node | undefined;
   while (!jsxAttributeNode && !styledNode && nodeTree.length > 0) {
     node = nodeTree.pop()!;
+    const nodeType = typeChecker.getTypeAtLocation(node);
+    if (!valueNode && nodeType.isStringLiteral()) {
+      // is string literal
+      valueNode = node;
+    }
     if (node.kind === ts.SyntaxKind.PropertyAssignment) {
       // is property assignment
       propertyAssignmentNode = node;
@@ -77,7 +82,6 @@ export const getTokenTypeAtPosition = (
       // is inside jsx attribute or jsx spread attribute
       jsxAttributeNode = node;
     }
-    const nodeType = typeChecker.getTypeAtLocation(node);
     if (typeChecker.typeToString(nodeType).startsWith('TamaguiComponent<')) {
       // is inside styled() call
       styledNode = node;
@@ -94,6 +98,7 @@ export const getTokenTypeAtPosition = (
   logger(`Origin node <${originNode?.getText()}>`);
   logger(`isTamaguiPropertyAssignment <${isTamaguiPropertyAssignment}>`);
   logger(`isJsxAttribute <${isJsxAttribute}>`);
+  logger(`Value node <${valueNode?.getText()}>`);
 
   if (!isTamaguiPropertyAssignment && !isJsxAttribute) return undefined;
 
@@ -106,5 +111,37 @@ export const getTokenTypeAtPosition = (
 
   if (!propName) return undefined;
 
-  return mapPropToToken(propName, config);
+  return [propName, valueNode?.getText(), valueNode] as const;
+};
+
+export const getTokenType = (
+  fileName: string,
+  position: number,
+  config: ParsedConfig,
+  ctx: TSContext
+) => {
+  const tokenMatch = getTokenAtPosition(fileName, position, ctx);
+  if (!tokenMatch) return undefined;
+  const [prop] = tokenMatch;
+  return mapPropToToken(prop, config);
+};
+
+export const getTokenWithValue = (
+  fileName: string,
+  position: number,
+  config: ParsedConfig,
+  ctx: TSContext
+) => {
+  const tokenMatch = getTokenAtPosition(fileName, position, ctx);
+  if (!tokenMatch) return undefined;
+  const [prop, value, node] = tokenMatch;
+  if (!value || !node) return undefined;
+  return [
+    mapPropToToken(prop, config),
+    value,
+    {
+      start: node.pos,
+      length: node.end - node.pos,
+    },
+  ] as const;
 };
