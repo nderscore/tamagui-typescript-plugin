@@ -6,6 +6,8 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
 - Show Tamagui theme/token values in TypeScript autocomplete suggestions
 
+- Show Tamagui theme/token values on hover
+
 - Graphical previews for color and theme tokens
 
 - Automatically reloads when your config is updated by the Tamagui compiler
@@ -22,11 +24,21 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
 ### Screenshots
 
+##### Theme tokens
+
 ![Theme Token Screenshot](./docs/screenshot_autocomplete_theme.png)
+
+##### Translucent colors
 
 ![Translucent Color Screenshot](./docs/screenshot_autocomplete_translucent.png)
 
+##### Sorted space tokens
+
 ![Space Token Screenshot](./docs/screenshot_autocomplete_space.png)
+
+##### Quick info on hover
+
+![Quick Info Hover Screenshot](./docs/screenshot_quickinfo.png)
 
 ## Setup
 
