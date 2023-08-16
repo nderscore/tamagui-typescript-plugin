@@ -1,3 +1,13 @@
+### 0.3.0 (2023-08-16)
+
+##### New Features
+
+- token previews on hover (quick info) ([afca5d9d](https://github.com/nderscore/tamagui-typescript-plugin/commit/afca5d9d17bcd9b4d71216fb471ca75cf5da8834))
+
+##### Bug Fixes
+
+- tighten token sorting rules and specific token detection ([df293dc1](https://github.com/nderscore/tamagui-typescript-plugin/commit/df293dc19bdaed5fabe4e23b73cdfbce47b0edad))
+
 ### 0.2.0 (2023-08-15)
 
 ##### New Features
