@@ -62,5 +62,5 @@ export const sanitizeMaybeQuotedString = (str: string) =>
 // TODO: should be more robust
 export const toPascal = (str: string) => {
   if (str.length < 1) return '';
-  return str[0]!.toUpperCase() + str.slice(1);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };

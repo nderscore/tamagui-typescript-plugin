@@ -1,5 +1,7 @@
 import color from 'color';
 
+import { toPascal } from './utils';
+
 const svgCheckerboard = `<defs>
 <pattern id="pattern-checker" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
 <rect x="0" y="0" width="4" height="4" fill="#fff" />
@@ -60,15 +62,41 @@ export const makeColorTokenDescription = (value: string) => {
   ]);
 };
 
+const formatThemePrefix = (key: string) => {
+  return key.replace(/([A-Za-z0-9]+)(?:_|$)/g, (_, key) => toPascal(key));
+};
+
 export const makeThemeTokenDescription = (values: Record<string, string>) => {
-  return makeTable([
-    { color: 'Color', theme: 'Theme', value: 'Value' },
-    ...Object.entries(values).map(([theme, value]) => {
-      return {
+  const table = [{ color: ' ', theme: 'Theme', value: 'Value' }];
+
+  let groupPrefix = '';
+  for (const [themeKey, value] of Object.entries(values)) {
+    if (!themeKey.includes('_')) {
+      table.push({
         color: makeColorTile(value),
-        theme: `**${theme}**`,
+        theme: `**${toPascal(themeKey)}**`,
         value: `\`${value}\``,
-      };
-    }),
-  ]);
+      });
+    } else {
+      const [, group, key] = themeKey.match(/((?:[A-Za-z0-9]+_)+)(.+)/) ?? [];
+      if (!group || !key) {
+        throw new Error(`TSTamagui:: Invalid theme key <${themeKey}>`);
+      }
+      if (group !== groupPrefix) {
+        groupPrefix = group;
+        table.push({
+          color: ' ',
+          theme: `┌\u{A0}**${formatThemePrefix(group)}**`,
+          value: '──────',
+        });
+      }
+      table.push({
+        color: `${makeColorTile(value)}`,
+        theme: `├ **${toPascal(key)}**`,
+        value: `\`${value}\``,
+      });
+    }
+  }
+
+  return makeTable(table);
 };
