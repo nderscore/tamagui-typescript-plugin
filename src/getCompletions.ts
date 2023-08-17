@@ -46,7 +46,8 @@ export const getCompletions = (
       const themeValue =
         config.themeColors[sanitizeMaybeQuotedString(entry.name)];
       if (themeValue) {
-        const defaultValue = themeValue[defaultTheme]!;
+        const defaultValue =
+          themeValue[defaultTheme] ?? Object.values(themeValue)[0];
         entry.kindModifiers = 'color';
         // add an extra '$' to prioritize theme tokens over color tokens
         entry.sortText = '$' + getSortText(entry.name);
