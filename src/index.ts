@@ -45,7 +45,11 @@ const init = (modules: { typescript: tss }) => {
 
       logger(`Using tamagui config path: ${tamaguiConfigFilePath}`);
 
-      const tamaguiConfig = readConfig(tamaguiConfigFilePath, ctx);
+      const tamaguiConfig = readConfig(
+        tamaguiConfigFilePath,
+        defaultTheme,
+        ctx
+      );
 
       if (!tamaguiConfig) {
         logger.error(`Tamagui config was not parsed.`);
@@ -83,6 +87,7 @@ const init = (modules: { typescript: tss }) => {
         logger('tamagui.config.json was updated.');
         const nextTamaguiConfig = readConfig(
           tamaguiConfigFilePath,
+          defaultTheme,
           getContext()
         );
         if (!nextTamaguiConfig) {

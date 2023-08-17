@@ -2,6 +2,12 @@ import type { TamaguiInternalConfig } from '@tamagui/core';
 
 import { TSContext } from './types';
 
+type Themes = TamaguiInternalConfig['themes'];
+
+type ThemeKey = keyof TamaguiInternalConfig['themes'] & string;
+
+type Theme = Themes[ThemeKey];
+
 /**
  * Simple utility to transform a token map into a simple key-value map
  */
@@ -30,19 +36,41 @@ const componentThemePattern = /_[A-Z]/;
 const underscoreDepth = (str: string) => str.split('_').length - 1;
 
 /**
+ * Sort themes by depth of underscores, then by presence of defaultTheme,
+ * then alphabetically
+ */
+const sortThemes = (defaultTheme: string) => {
+  const defaultThemePrefix = `${defaultTheme}_`;
+  return ([keyA]: [ThemeKey, Theme], [keyB]: [ThemeKey, Theme]) => {
+    const depthA = underscoreDepth(keyA);
+    const depthB = underscoreDepth(keyB);
+    if (depthA === depthB) {
+      const isADefault = keyA === defaultTheme;
+      const isADefaultSubtheme = keyA.startsWith(defaultThemePrefix);
+      const isBDefault = keyB === defaultTheme;
+      const isBDefaultSubtheme = keyB.startsWith(defaultThemePrefix);
+      if (isADefault) return -1;
+      if (isBDefault) return 1;
+      if (isADefaultSubtheme && !isBDefault) return -1;
+      if (isBDefaultSubtheme && !isADefault) return 1;
+      return keyA.localeCompare(keyB);
+    }
+    return depthA - depthB;
+  };
+};
+
+/**
  * Utility to transform a record of themes into a record of theme tokens
  * with the theme names as keys and the token values as values
  */
-const getThemeColors = (themes: TamaguiInternalConfig['themes']) => {
+const getThemeColors = (
+  themes: TamaguiInternalConfig['themes'],
+  defaultTheme: string
+) => {
   const themeTokens: Record<string, Record<string, string>> = {};
 
   const sortedThemes = Object.entries(themes);
-  sortedThemes.sort(([keyA], [keyB]) => {
-    const depthA = underscoreDepth(keyA);
-    const depthB = underscoreDepth(keyB);
-    if (depthA === depthB) return keyA.localeCompare(keyB);
-    return depthA - depthB;
-  });
+  sortedThemes.sort(sortThemes(defaultTheme));
 
   for (const [themeName, theme] of sortedThemes) {
     if (componentThemePattern.test(themeName)) continue;
@@ -64,6 +92,7 @@ const getThemeColors = (themes: TamaguiInternalConfig['themes']) => {
  */
 export const readConfig = (
   tamaguiConfigFilePath: string,
+  defaultTheme: string,
   { modules, logger }: TSContext
 ) => {
   const tamaguiConfigFile = modules.typescript.sys.readFile(
@@ -91,7 +120,7 @@ export const readConfig = (
     const size = simplifyTokenMap(tokens.size);
     const radius = simplifyTokenMap(tokens.radius);
     const zIndex = simplifyTokenMap(tokens.zIndex, false);
-    const themeColors = getThemeColors(themes);
+    const themeColors = getThemeColors(themes, defaultTheme);
 
     const config = {
       color,
