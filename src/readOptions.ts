@@ -10,13 +10,14 @@ export const readOptions = ({ info, modules }: TSContext) => {
     pathToApp = 'apps/next',
     defaultTheme = 'light',
     colorTileSize = 18,
-    completionFilters: { showColorTokens = true } = {},
+    completionFilters: { showColorTokens = true, showTrueTokens = true } = {},
   } = info.config as {
     pathToApp?: string;
     defaultTheme?: string;
     colorTileSize?: number;
     completionFilters?: {
       showColorTokens?: boolean;
+      showTrueTokens?: boolean;
     };
   };
 
@@ -36,6 +37,7 @@ export const readOptions = ({ info, modules }: TSContext) => {
     colorTileSize,
     completionFilters: {
       showColorTokens,
+      showTrueTokens,
     },
   } as const;
 };

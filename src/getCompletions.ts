@@ -63,8 +63,19 @@ export const getCompletions = (
       }
     }
 
-    const [scale, value] = getMaybeSpecificToken(entry.name, type, config);
+    const [scale, value, token] = getMaybeSpecificToken(
+      entry.name,
+      type,
+      config
+    );
     if (scale && value) {
+      const isTrueToken =
+        (scale === 'space' || scale === 'size') &&
+        (token === '$true' || token === '$-true');
+      if (isTrueToken && !options.completionFilters.showTrueTokens) {
+        // filter out true and -true tokens
+        continue;
+      }
       const isColor = scale === 'color';
       if (isColor && !options.completionFilters.showColorTokens) {
         // filter out color tokens if the option is disabled

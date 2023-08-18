@@ -44,13 +44,14 @@ export const getMaybeSpecificToken = (
     | ParsedConfig[keyof ParsedConfig]
     | undefined;
 
-  const val = scaleObj?.[
-    (token.startsWith('$') ? token : `$${token}`) as keyof typeof scaleObj
-  ] as string | undefined;
+  const tokenKey = (
+    token.startsWith('$') ? token : `$${token}`
+  ) as keyof typeof scaleObj;
+  const val = scaleObj?.[tokenKey] as string | undefined;
 
   if (!val) return [undefined, undefined] as const;
 
-  return [scale, val] as const;
+  return [scale, val, tokenKey] as const;
 };
 
 /**
