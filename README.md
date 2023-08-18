@@ -28,17 +28,17 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
 ![Theme Token Screenshot](./docs/screenshot_autocomplete_theme.png)
 
-##### Translucent colors
-
 ![Translucent Color Screenshot](./docs/screenshot_autocomplete_translucent.png)
+
+##### Quick info on hover
+
+![Quick Info Color Hover Screenshot](./docs/screenshot_quickinfo_color.png)
+
+![Quick Info Space Hover Screenshot](./docs/screenshot_quickinfo_space.png)
 
 ##### Sorted space tokens
 
 ![Space Token Screenshot](./docs/screenshot_autocomplete_space.png)
-
-##### Quick info on hover
-
-![Quick Info Hover Screenshot](./docs/screenshot_quickinfo.png)
 
 ## Setup
 
