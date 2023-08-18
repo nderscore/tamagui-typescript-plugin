@@ -43,6 +43,7 @@ export const getCompletions = (
 
   logger(`token type <${type}>`);
 
+  const entries: ts.CompletionEntry[] = [];
   for (const entry of original.entries) {
     if (type === 'color') {
       const themeValue =
@@ -57,6 +58,7 @@ export const getCompletions = (
           detail: ' ' + defaultValue,
           description: 'ThemeToken',
         };
+        entries.push(entry);
         continue;
       }
     }
@@ -64,6 +66,10 @@ export const getCompletions = (
     const [scale, value] = getMaybeSpecificToken(entry.name, type, config);
     if (scale && value) {
       const isColor = scale === 'color';
+      if (isColor && !options.completionFilters.showColorTokens) {
+        // filter out color tokens if the option is disabled
+        continue;
+      }
       if (isColor) {
         entry.kindModifiers = 'color';
       }
@@ -73,7 +79,11 @@ export const getCompletions = (
         description: `${toPascal(scale)}Token`,
       };
     }
+
+    entries.push(entry);
   }
+
+  original.entries = entries;
 
   return original;
 };

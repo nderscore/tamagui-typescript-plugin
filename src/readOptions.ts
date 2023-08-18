@@ -10,10 +10,14 @@ export const readOptions = ({ info, modules }: TSContext) => {
     pathToApp = 'apps/next',
     defaultTheme = 'light',
     colorTileSize = 18,
+    completionFilters: { showColorTokens = true } = {},
   } = info.config as {
     pathToApp?: string;
     defaultTheme?: string;
     colorTileSize?: number;
+    completionFilters?: {
+      showColorTokens?: boolean;
+    };
   };
 
   const rootDir = path.join(
@@ -30,6 +34,9 @@ export const readOptions = ({ info, modules }: TSContext) => {
     tamaguiConfigFilePath,
     defaultTheme,
     colorTileSize,
+    completionFilters: {
+      showColorTokens,
+    },
   } as const;
 };
 

@@ -42,6 +42,10 @@ const init = (modules: { typescript: tss }) => {
       };
 
       const options = readOptions(ctx);
+
+      logger(`Options parsed`);
+      logger(options);
+
       const { defaultTheme, tamaguiConfigFilePath } = options;
 
       logger(`Using tamagui config path: ${tamaguiConfigFilePath}`);
