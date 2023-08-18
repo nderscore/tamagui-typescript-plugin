@@ -2,6 +2,7 @@ import type ts from 'typescript/lib/tsserverlibrary';
 
 import { getTokenType } from './getTokens';
 import { ParsedConfig } from './readConfig';
+import { PluginOptions } from './readOptions';
 import { TSContext } from './types';
 import {
   getMaybeSpecificToken,
@@ -18,20 +19,21 @@ export const getCompletions = (
   {
     fileName,
     position,
-    // options,
+    // opts,
     ctx,
     config,
-    defaultTheme,
+    options,
   }: {
     fileName: string;
     position: number;
-    options?: ts.GetCompletionsAtPositionOptions;
+    opts?: ts.GetCompletionsAtPositionOptions;
     ctx: TSContext;
     config: ParsedConfig;
-    defaultTheme: string;
+    options: PluginOptions;
   }
 ): ts.WithMetadata<ts.CompletionInfo> => {
   const { logger } = ctx;
+  const { defaultTheme } = options;
 
   logger(`calculating tamagui completions <$${position}@${fileName}>`);
 

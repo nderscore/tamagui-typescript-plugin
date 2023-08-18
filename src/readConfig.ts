@@ -1,5 +1,6 @@
 import type { TamaguiInternalConfig } from '@tamagui/core';
 
+import { PluginOptions } from './readOptions';
 import { TSContext } from './types';
 
 type Themes = TamaguiInternalConfig['themes'];
@@ -65,7 +66,7 @@ const sortThemes = (defaultTheme: string) => {
  */
 const getThemeColors = (
   themes: TamaguiInternalConfig['themes'],
-  defaultTheme: string
+  { defaultTheme }: PluginOptions
 ) => {
   const themeTokens: Record<string, Record<string, string>> = {};
 
@@ -91,10 +92,10 @@ const getThemeColors = (
  * Read and process the tamagui config file into a simpler format
  */
 export const readConfig = (
-  tamaguiConfigFilePath: string,
-  defaultTheme: string,
+  options: PluginOptions,
   { modules, logger }: TSContext
 ) => {
+  const { tamaguiConfigFilePath } = options;
   const tamaguiConfigFile = modules.typescript.sys.readFile(
     tamaguiConfigFilePath
   );
@@ -120,7 +121,7 @@ export const readConfig = (
     const size = simplifyTokenMap(tokens.size);
     const radius = simplifyTokenMap(tokens.radius);
     const zIndex = simplifyTokenMap(tokens.zIndex, false);
-    const themeColors = getThemeColors(themes, defaultTheme);
+    const themeColors = getThemeColors(themes, options);
 
     const config = {
       color,

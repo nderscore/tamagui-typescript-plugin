@@ -41,15 +41,12 @@ const init = (modules: { typescript: tss }) => {
         };
       };
 
-      const { tamaguiConfigFilePath, defaultTheme } = readOptions(ctx);
+      const options = readOptions(ctx);
+      const { defaultTheme, tamaguiConfigFilePath } = options;
 
       logger(`Using tamagui config path: ${tamaguiConfigFilePath}`);
 
-      const tamaguiConfig = readConfig(
-        tamaguiConfigFilePath,
-        defaultTheme,
-        ctx
-      );
+      const tamaguiConfig = readConfig(options, ctx);
 
       if (!tamaguiConfig) {
         logger.error(`Tamagui config was not parsed.`);
@@ -58,7 +55,7 @@ const init = (modules: { typescript: tss }) => {
 
       const languageServerHooks = getLanguageServerHooks({
         config: tamaguiConfig,
-        defaultTheme,
+        options,
         getContext,
       });
 
@@ -85,11 +82,7 @@ const init = (modules: { typescript: tss }) => {
 
       watchHost.watchFile(tamaguiConfigFilePath, () => {
         logger('tamagui.config.json was updated.');
-        const nextTamaguiConfig = readConfig(
-          tamaguiConfigFilePath,
-          defaultTheme,
-          getContext()
-        );
+        const nextTamaguiConfig = readConfig(options, getContext());
         if (!nextTamaguiConfig) {
           logger(`Failed to parse updated tamagui config.`);
           return;

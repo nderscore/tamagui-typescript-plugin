@@ -6,9 +6,14 @@ import { TSContext } from './types';
  * Read options passed in from the tsconfig.json file
  */
 export const readOptions = ({ info, modules }: TSContext) => {
-  const { pathToApp = 'apps/next', defaultTheme = 'light' } = info.config as {
+  const {
+    pathToApp = 'apps/next',
+    defaultTheme = 'light',
+    colorTileSize = 18,
+  } = info.config as {
     pathToApp?: string;
     defaultTheme?: string;
+    colorTileSize?: number;
   };
 
   const rootDir = path.join(
@@ -24,5 +29,8 @@ export const readOptions = ({ info, modules }: TSContext) => {
   return {
     tamaguiConfigFilePath,
     defaultTheme,
+    colorTileSize,
   } as const;
 };
+
+export type PluginOptions = ReturnType<typeof readOptions>;

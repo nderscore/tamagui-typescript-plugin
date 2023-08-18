@@ -4,6 +4,7 @@ import { getCompletionDetails } from './getCompletionDetails';
 import { getCompletions } from './getCompletions';
 import { getQuickInfo } from './getQuickInfo';
 import { ParsedConfig } from './readConfig';
+import { PluginOptions } from './readOptions';
 import { TSContext } from './types';
 
 /**
@@ -11,11 +12,11 @@ import { TSContext } from './types';
  */
 export const getLanguageServerHooks = ({
   config,
-  defaultTheme,
+  options,
   getContext,
 }: {
   config: ParsedConfig;
-  defaultTheme: string;
+  options: PluginOptions;
   getContext: () => TSContext;
 }) => {
   const languageServerHooks: Partial<ts.LanguageService> = {
@@ -53,17 +54,17 @@ export const getLanguageServerHooks = ({
         data,
         ctx,
         config,
-        defaultTheme,
+        options,
       });
     },
     //
-    getCompletionsAtPosition(fileName, position, options) {
+    getCompletionsAtPosition(fileName, position, opts) {
       const ctx = getContext();
       const { info } = ctx;
       const original = info.languageService.getCompletionsAtPosition(
         fileName,
         position,
-        options
+        opts
       );
 
       if (!original) return undefined;
@@ -71,10 +72,10 @@ export const getLanguageServerHooks = ({
       return getCompletions(original, {
         fileName,
         position,
-        options,
+        opts,
         ctx,
         config,
-        defaultTheme,
+        options,
       });
     },
     //
@@ -90,7 +91,7 @@ export const getLanguageServerHooks = ({
         position,
         ctx,
         config,
-        defaultTheme,
+        options,
       });
     },
     //

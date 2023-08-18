@@ -7,6 +7,7 @@ import {
   makeTokenDescription,
 } from './metadata';
 import { ParsedConfig } from './readConfig';
+import { PluginOptions } from './readOptions';
 import { TSContext } from './types';
 import {
   getMaybeSpecificToken,
@@ -27,9 +28,9 @@ export const getCompletionDetails = (
     // source,
     // preferences,
     // data,
-    // defaultTheme,
     ctx,
     config,
+    options,
   }: {
     entryName: string;
     fileName: string;
@@ -40,7 +41,7 @@ export const getCompletionDetails = (
     data?: ts.CompletionEntryData;
     ctx: TSContext;
     config: ParsedConfig;
-    defaultTheme: string;
+    options: PluginOptions;
   }
 ): ts.CompletionEntryDetails => {
   const { logger } = ctx;
@@ -61,7 +62,7 @@ export const getCompletionDetails = (
       original.documentation ??= [];
       original.documentation.unshift({
         kind: 'markdown',
-        text: makeThemeTokenDescription(themeValue),
+        text: makeThemeTokenDescription(themeValue, options),
       });
       return original;
     }
@@ -74,7 +75,7 @@ export const getCompletionDetails = (
       kind: 'markdown',
       text:
         scale === 'color'
-          ? makeColorTokenDescription(value)
+          ? makeColorTokenDescription(value, options)
           : makeTokenDescription(toPascal(scale), value),
     });
   }

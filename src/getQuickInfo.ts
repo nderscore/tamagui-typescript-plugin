@@ -7,6 +7,7 @@ import {
   makeTokenDescription,
 } from './metadata';
 import { ParsedConfig } from './readConfig';
+import { PluginOptions } from './readOptions';
 import { TSContext } from './types';
 import {
   getMaybeSpecificToken,
@@ -21,13 +22,13 @@ export const getQuickInfo = (
     position,
     ctx,
     config,
-    defaultTheme,
+    options,
   }: {
     fileName: string;
     position: number;
     ctx: TSContext;
     config: ParsedConfig;
-    defaultTheme: string;
+    options: PluginOptions;
   }
 ): ts.QuickInfo | undefined => {
   const { logger } = ctx;
@@ -58,7 +59,7 @@ export const getQuickInfo = (
       result.documentation ??= [];
       result.documentation.unshift({
         kind: 'markdown',
-        text: makeThemeTokenDescription(themeValue),
+        text: makeThemeTokenDescription(themeValue, options),
       });
       found = true;
     }
@@ -76,7 +77,7 @@ export const getQuickInfo = (
     result.documentation.unshift({
       kind: 'markdown',
       text: isColor
-        ? makeColorTokenDescription(value)
+        ? makeColorTokenDescription(value, options)
         : makeTokenDescription(toPascal(scale), value),
     });
     found = true;

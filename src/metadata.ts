@@ -1,5 +1,6 @@
 import color from 'color';
 
+import { PluginOptions } from './readOptions';
 import { toPascal } from './utils';
 
 const squirclePath = `M 0,12 C 0,0 0,0 12,0 24,0 24,0 24,12 24,24 24,24 12,24 0, 24 0,24 0,12`;
@@ -14,11 +15,11 @@ const svgCheckerboard = `<defs>
 </defs>
 <path d="${squirclePath}" fill="url(#pattern-checker)" />`;
 
-const makeColorTile = (value: string) => {
+const makeColorTile = (value: string, size: number) => {
   try {
     const colorValue = color(value);
     const hasAlphaTransparency = colorValue.alpha() !== 1;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">${
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}">${
       hasAlphaTransparency ? svgCheckerboard : ''
     }<path d="${squirclePath}" fill="${value}" /></svg>`;
     const image = `![Image](data:image/svg+xml;base64,${btoa(svg)})`;
@@ -54,11 +55,14 @@ export const makeTokenDescription = (scale: string, value: string) => {
   ]);
 };
 
-export const makeColorTokenDescription = (value: string) => {
+export const makeColorTokenDescription = (
+  value: string,
+  options: PluginOptions
+) => {
   return makeTable([
     { color: 'Color', value: 'Value' },
     {
-      color: makeColorTile(value),
+      color: makeColorTile(value, options.colorTileSize),
       value: `\`${value}\``,
     },
   ]);
@@ -68,14 +72,17 @@ const formatThemePrefix = (key: string) => {
   return key.replace(/([A-Za-z0-9]+)(?:_|$)/g, (_, key) => toPascal(key));
 };
 
-export const makeThemeTokenDescription = (values: Record<string, string>) => {
+export const makeThemeTokenDescription = (
+  values: Record<string, string>,
+  options: PluginOptions
+) => {
   const table = [{ color: ' ', theme: 'Theme', value: 'Value' }];
 
   let groupPrefix = '';
   for (const [themeKey, value] of Object.entries(values)) {
     if (!themeKey.includes('_')) {
       table.push({
-        color: makeColorTile(value),
+        color: makeColorTile(value, options.colorTileSize),
         theme: `**${toPascal(themeKey)}**`,
         value: `\`${value}\``,
       });
@@ -93,7 +100,7 @@ export const makeThemeTokenDescription = (values: Record<string, string>) => {
         });
       }
       table.push({
-        color: `${makeColorTile(value)}`,
+        color: `${makeColorTile(value, options.colorTileSize)}`,
         theme: `├ **${toPascal(key)}**`,
         value: `\`${value}\``,
       });
