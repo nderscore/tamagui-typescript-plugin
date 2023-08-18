@@ -10,20 +10,15 @@ import { TSContext } from './types';
 const getNodeTreeAtPosition = (
   node: ts.Node,
   pos: number,
-  depth = 0
+  tree: ts.Node[] = []
 ): ts.Node[] => {
-  const tree: ts.Node[] = [];
   const children = node.getChildren();
   for (const child of children) {
     const start = child.getStart();
     const end = child.getEnd();
     if (start <= pos && pos <= end) {
       tree.push(child);
-      tree.push(
-        ...children.flatMap((child) =>
-          getNodeTreeAtPosition(child, pos, depth + 1)
-        )
-      );
+      return getNodeTreeAtPosition(child, pos, tree);
     }
   }
   return tree;
@@ -57,15 +52,16 @@ const getTokenAtPosition = (
 
   if (nodeTree.length < 2) return undefined;
 
-  const originNode = nodeTree[nodeTree.length - 1];
+  let i = nodeTree.length - 1;
+  const originNode = nodeTree[i];
   let styledNode: ts.Node | undefined;
   let jsxAttributeNode: ts.Node | undefined;
   let propertyAssignmentNode: ts.Node | undefined;
   let valueNode: ts.Node | undefined;
 
   let node: ts.Node | undefined;
-  while (!jsxAttributeNode && !styledNode && nodeTree.length > 0) {
-    node = nodeTree.pop()!;
+  while (!jsxAttributeNode && !styledNode && i >= 0) {
+    node = nodeTree[i--]!;
     const nodeType = typeChecker.getTypeAtLocation(node);
     if (!valueNode && nodeType.isStringLiteral()) {
       // is string literal
@@ -82,7 +78,7 @@ const getTokenAtPosition = (
       // is inside jsx attribute or jsx spread attribute
       jsxAttributeNode = node;
     }
-    if (typeChecker.typeToString(nodeType).startsWith('TamaguiComponent<')) {
+    if (nodeType.aliasSymbol?.escapedName === 'TamaguiComponent') {
       // is inside styled() call
       styledNode = node;
     }
@@ -113,7 +109,7 @@ const getTokenAtPosition = (
 
   const valueText =
     valueNode?.kind === ts.SyntaxKind.JsxAttribute
-      ? valueNode?.getText().replace(/^\w+=/, '')
+      ? valueNode?.getText().replace(`${propName}=`, '')
       : valueNode?.getText();
 
   return [propName, valueText, valueNode] as const;
