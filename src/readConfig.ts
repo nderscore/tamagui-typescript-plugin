@@ -51,8 +51,8 @@ const sortThemes = (defaultTheme: string) => {
       const isBDefaultSubtheme = keyB.startsWith(defaultThemePrefix);
       if (isADefault) return -1;
       if (isBDefault) return 1;
-      if (isADefaultSubtheme && !isBDefault) return -1;
-      if (isBDefaultSubtheme && !isADefault) return 1;
+      if (isADefaultSubtheme && !isBDefaultSubtheme) return -1;
+      if (isBDefaultSubtheme && !isADefaultSubtheme) return 1;
       return keyA.localeCompare(keyB);
     }
     return depthA - depthB;
