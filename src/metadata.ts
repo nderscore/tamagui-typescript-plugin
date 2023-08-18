@@ -2,6 +2,8 @@ import color from 'color';
 
 import { toPascal } from './utils';
 
+const squirclePath = `M 0,12 C 0,0 0,0 12,0 24,0 24,0 24,12 24,24 24,24 12,24 0, 24 0,24 0,12`;
+
 const svgCheckerboard = `<defs>
 <pattern id="pattern-checker" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
 <rect x="0" y="0" width="4" height="4" fill="#fff" />
@@ -10,7 +12,7 @@ const svgCheckerboard = `<defs>
 <rect x="4" y="4" width="4" height="4" fill="#fff" />
 </pattern>
 </defs>
-<rect x="1" y="1" width="22" height="22" rx="4" fill="url(#pattern-checker)" />`;
+<path d="${squirclePath}" fill="url(#pattern-checker)" />`;
 
 const makeColorTile = (value: string) => {
   try {
@@ -18,7 +20,7 @@ const makeColorTile = (value: string) => {
     const hasAlphaTransparency = colorValue.alpha() !== 1;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">${
       hasAlphaTransparency ? svgCheckerboard : ''
-    }<rect x="1" y="1" width="22" height="22" fill="${value}" rx="4" /></svg>`;
+    }<path d="${squirclePath}" fill="${value}" /></svg>`;
     const image = `![Image](data:image/svg+xml;base64,${btoa(svg)})`;
     return image;
   } catch {
