@@ -141,8 +141,8 @@ export const getTokenWithValue = (
     mapPropToToken(prop, config),
     value,
     {
-      start: node.pos,
-      length: node.end - node.pos,
+      start: node.end - value.length,
+      length: value.length,
     },
   ] as const;
 };
