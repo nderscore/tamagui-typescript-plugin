@@ -1,3 +1,20 @@
+### 0.4.0 (2023-08-18)
+
+##### New Features
+
+- group themes by parent in previews ([d6c8883d](https://github.com/nderscore/tamagui-typescript-plugin/commit/d6c8883d971a50fcb9f556b8b2d56573b721bedf))
+- sort default theme first in previews ([d9a3d9ea](https://github.com/nderscore/tamagui-typescript-plugin/commit/d9a3d9eaba83978d3c6c1a03d90b9613846ffa1d))
+
+##### Bug Fixes
+
+- theme token sorting ([d959172d](https://github.com/nderscore/tamagui-typescript-plugin/commit/d959172dc6ea510b1fc77dc275df53cec082be4f))
+- highlight only the token value string on hover ([4be5ee40](https://github.com/nderscore/tamagui-typescript-plugin/commit/4be5ee40a3111836f590fd15482dd1c3cfa775f3))
+- prevent completion error if default theme is missing ([24038bdf](https://github.com/nderscore/tamagui-typescript-plugin/commit/24038bdf937090afc4f3e566c35bdc12c516fb4f))
+
+##### Performance Improvements
+
+- improve AST walking performance ([0241c27b](https://github.com/nderscore/tamagui-typescript-plugin/commit/0241c27b6e9bdf07a369c22c41fa012cbbfd7c90))
+
 #### 0.3.1 (2023-08-16)
 
 ##### Bug Fixes
