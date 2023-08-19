@@ -12,6 +12,8 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
 - Automatically reloads when your config is updated by the Tamagui compiler
 
+- Granular filtering options for autocomplete suggestions
+
 - Smart sorting of autocomplete suggestions:
 
   - Tokens with numbers get sorted in numeric order
@@ -66,7 +68,27 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
            "pathToApp": "apps/next",
            //
            // the default theme to show for theme tokens when inlined
-           "defaultTheme": "light"
+           "defaultTheme": "light",
+           //
+           // the size (in pixels) of color tiles in previews
+           "colorTileSize": 18,
+           //
+           // options for filtering autocomplete suggestions
+           "completionFilters": {
+             // set false to hide non-theme color tokens
+             "showColorTokens": true,
+             // set false to hide $true and $-true size/space tokens
+             "showTrueTokens": true,
+             // per-scale lists of specific token names to exclude from autocomplete results
+             "custom": {
+               // "themeColor": [],
+               // "color": [],
+               // "size": [],
+               // "space": [],
+               // "radius": [],
+               // "zIndex": []
+             }
+           }
          }
        ]
      }
