@@ -14,7 +14,12 @@ const init = (modules: { typescript: tss }) => {
         const payload =
           typeof msg === 'string'
             ? msg
-            : `(json)\n${JSON.stringify(msg, null, 2)}`;
+            : `(json)\n${JSON.stringify(
+                msg,
+                (_key, val) =>
+                  typeof val === 'function' ? val.toString() : val,
+                2
+              )}`;
         info.project.projectService.logger[type === 'info' ? 'info' : 'msg'](
           `TSTamagui:: ${payload}`
         );

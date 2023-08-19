@@ -46,9 +46,15 @@ export const getCompletions = (
   const entries: ts.CompletionEntry[] = [];
   for (const entry of original.entries) {
     if (type === 'color') {
-      const themeValue =
-        config.themeColors[sanitizeMaybeQuotedString(entry.name)];
+      const sanitizedEntryName = sanitizeMaybeQuotedString(entry.name);
+      const themeValue = config.themeColors[sanitizedEntryName];
       if (themeValue) {
+        if (
+          options.completionFilters.custom?.('themeColor', sanitizedEntryName)
+        ) {
+          // custom filter
+          continue;
+        }
         const defaultValue =
           themeValue[defaultTheme] ?? Object.values(themeValue)[0];
         entry.kindModifiers = 'color';
@@ -69,6 +75,10 @@ export const getCompletions = (
       config
     );
     if (scale && value) {
+      if (options.completionFilters.custom?.(scale, token)) {
+        // custom filter
+        continue;
+      }
       const isTrueToken =
         (scale === 'space' || scale === 'size') &&
         (token === '$true' || token === '$-true');

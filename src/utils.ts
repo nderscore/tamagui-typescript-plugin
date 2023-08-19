@@ -51,7 +51,11 @@ export const getMaybeSpecificToken = (
 
   if (!val) return [undefined, undefined] as const;
 
-  return [scale, val, tokenKey] as const;
+  return [
+    scale as Exclude<keyof ParsedConfig, 'shorthands' | 'themeColors'>,
+    val,
+    tokenKey,
+  ] as const;
 };
 
 /**
