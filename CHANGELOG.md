@@ -1,3 +1,13 @@
+### 0.5.0 (2023-08-19)
+
+##### New Features
+
+- add option for custom autocomplete filters ([282c2149](https://github.com/nderscore/tamagui-typescript-plugin/commit/282c21491aded667b23ec9764568d7c2ea830c94))
+- add option showTrueTokens, allows filtering true and -true space/size tokens from autocomplete ([50ff939f](https://github.com/nderscore/tamagui-typescript-plugin/commit/50ff939fea227e20ede2315222a618bd9a2e96ed))
+- add option showColorTokens, allows filtering color tokens from autocomplete results ([3026cc33](https://github.com/nderscore/tamagui-typescript-plugin/commit/3026cc3310017b85eb949129e63d18f1240315fe))
+- add configuration option colorTileSize, default is now 18 ([da977ad6](https://github.com/nderscore/tamagui-typescript-plugin/commit/da977ad6c0053dbcb932d678482573ff8313e00b))
+- replace rounded square tiles with squircles ([97d558f4](https://github.com/nderscore/tamagui-typescript-plugin/commit/97d558f4c7e9e660c031040369330f8b09b7912e))
+
 ### 0.4.0 (2023-08-18)
 
 ##### New Features
