@@ -56,7 +56,8 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
 1. Add plugin to your `tsconfig.json` with settings:
 
-   ```json
+   <!-- prettier-ignore -->
+   ```json5
    {
      "compilerOptions": {
        "plugins": [
