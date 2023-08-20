@@ -76,10 +76,13 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
            //
            // options for filtering autocomplete suggestions
            "completionFilters": {
+             //
              // set false to hide non-theme color tokens
              "showColorTokens": true,
-             // set false to hide $true and $-true size/space tokens
+             //
+             // set false to hide $true and $-true tokens from all scales
              "showTrueTokens": true,
+             //
              // per-scale lists of specific token names to exclude from autocomplete results
              "custom": {
                // "themeColor": [],
