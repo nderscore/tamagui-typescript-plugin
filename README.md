@@ -2,6 +2,12 @@
 
 Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
+- [Features](#features)
+  - [Screenshots](#screenshots)
+  - [Changelog](#changelog)
+- [Setup](#setup)
+- [Contributing](#contributing)
+
 ## Features
 
 - Show Tamagui theme/token values in TypeScript autocomplete suggestions
@@ -41,6 +47,10 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 ##### Sorted space tokens
 
 ![Space Token Screenshot](./docs/screenshot_autocomplete_space.png)
+
+### Changelog
+
+See the [changelog](./CHANGELOG.md) for the latest changes.
 
 ## Setup
 
