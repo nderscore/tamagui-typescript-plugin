@@ -1,3 +1,9 @@
+#### 0.5.1 (2023-08-20)
+
+##### Bug Fixes
+
+- hide true in all scales when showTrueTokens=false ([68a8b073](https://github.com/nderscore/tamagui-typescript-plugin/commit/68a8b073d4e9991982947b8aa1ccd3679ca34ad5))
+
 ### 0.5.0 (2023-08-19)
 
 ##### New Features
