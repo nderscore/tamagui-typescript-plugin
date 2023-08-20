@@ -79,10 +79,10 @@ export const getCompletions = (
         // custom filter
         continue;
       }
-      const isTrueToken =
-        (scale === 'space' || scale === 'size') &&
-        (token === '$true' || token === '$-true');
-      if (isTrueToken && !options.completionFilters.showTrueTokens) {
+      if (
+        !options.completionFilters.showTrueTokens &&
+        (token === '$true' || token === '$-true')
+      ) {
         // filter out true and -true tokens
         continue;
       }
