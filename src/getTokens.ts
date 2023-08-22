@@ -67,7 +67,10 @@ const getTokenAtPosition = (
       // is string literal
       valueNode = node;
     }
-    if (node.kind === ts.SyntaxKind.PropertyAssignment) {
+    if (
+      !propertyAssignmentNode &&
+      node.kind === ts.SyntaxKind.PropertyAssignment
+    ) {
       // is property assignment
       propertyAssignmentNode = node;
     }
