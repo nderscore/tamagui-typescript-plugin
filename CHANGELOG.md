@@ -1,3 +1,9 @@
+#### 0.5.2 (2023-08-22)
+
+##### Bug Fixes
+
+- prop type detection in nested styles (psuedostates/media) ([4bd02e1c](https://github.com/nderscore/tamagui-typescript-plugin/commit/4bd02e1c7048984d20723c897dc949df240df487))
+
 #### 0.5.1 (2023-08-20)
 
 ##### Bug Fixes
