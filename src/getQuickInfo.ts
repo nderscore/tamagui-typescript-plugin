@@ -37,7 +37,7 @@ export const getQuickInfo = (
 
   const tokenResult = getTokenWithValue(fileName, position, config, ctx);
 
-  if (!tokenResult) return undefined;
+  if (!tokenResult) return original;
 
   const [type, entryName, textSpan] = tokenResult;
 
@@ -85,5 +85,5 @@ export const getQuickInfo = (
 
   if (found) return result;
 
-  return undefined;
+  return original;
 };
