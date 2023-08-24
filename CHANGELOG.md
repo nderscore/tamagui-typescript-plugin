@@ -1,3 +1,9 @@
+#### 0.5.3 (2023-08-24)
+
+##### Bug Fixes
+
+- use original quick info result if no tamagui token found ([e8b38534](https://github.com/nderscore/tamagui-typescript-plugin/commit/e8b3853485f34bac6de2cff90c0da95329909eb4))
+
 #### 0.5.2 (2023-08-22)
 
 ##### Bug Fixes
