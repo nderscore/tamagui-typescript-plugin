@@ -5,7 +5,7 @@ import { getCompletions } from './getCompletions';
 import { getQuickInfo } from './getQuickInfo';
 import { ParsedConfig } from './readConfig';
 import { PluginOptions } from './readOptions';
-import { TSContext } from './types';
+import { TSContext, TSContextBase } from './types';
 
 /**
  * Binding code for hooks into the language server
@@ -17,7 +17,7 @@ export const getLanguageServerHooks = ({
 }: {
   config: ParsedConfig;
   options: PluginOptions;
-  getContext: () => TSContext;
+  getContext: () => TSContext | TSContextBase;
 }) => {
   const languageServerHooks: Partial<ts.LanguageService> = {
     //
@@ -31,7 +31,7 @@ export const getLanguageServerHooks = ({
       data
     ) {
       const ctx = getContext();
-      const { info } = ctx;
+      const { info, logger } = ctx;
       const original = info.languageService.getCompletionEntryDetails(
         fileName,
         position,
@@ -41,6 +41,11 @@ export const getLanguageServerHooks = ({
         preferences,
         data
       );
+
+      if (!('program' in ctx)) {
+        logger.error(`Completions details: No program found in context`);
+        return original;
+      }
 
       if (!original) return undefined;
 
@@ -60,12 +65,17 @@ export const getLanguageServerHooks = ({
     //
     getCompletionsAtPosition(fileName, position, opts) {
       const ctx = getContext();
-      const { info } = ctx;
+      const { info, logger } = ctx;
       const original = info.languageService.getCompletionsAtPosition(
         fileName,
         position,
         opts
       );
+
+      if (!('program' in ctx)) {
+        logger.error(`Completions: No program found in context`);
+        return original;
+      }
 
       if (!original) return undefined;
 
@@ -81,11 +91,17 @@ export const getLanguageServerHooks = ({
     //
     getQuickInfoAtPosition(fileName, position) {
       const ctx = getContext();
-      const { info } = ctx;
+      const { info, logger } = ctx;
       const original = info.languageService.getQuickInfoAtPosition(
         fileName,
         position
       );
+
+      if (!('program' in ctx)) {
+        logger.error(`No program found in context`);
+        return original;
+      }
+
       return getQuickInfo(original, {
         fileName,
         position,

@@ -3,13 +3,11 @@ import type ts from 'typescript/lib/tsserverlibrary';
 import { getLanguageServerHooks } from './hooks';
 import { readConfig } from './readConfig';
 import { readOptions } from './readOptions';
-import { TSContext, tss } from './types';
+import { TSContext, TSContextBase, tss } from './types';
 
 const init = (modules: { typescript: tss }) => {
   const plugin: ts.server.PluginModule = {
     create(info: ts.server.PluginCreateInfo): ts.LanguageService {
-      const program = info.languageService.getProgram()!;
-
       const logger = (msg: string | {}, type = 'info' as 'info' | 'error') => {
         const payload =
           typeof msg === 'string'
@@ -28,25 +26,23 @@ const init = (modules: { typescript: tss }) => {
 
       logger('Initializing Tamagui Plugin...');
 
-      const ctx: TSContext = {
+      const ctxBase: TSContextBase = {
         info,
         modules,
         logger,
-        program,
-        typeChecker: program.getTypeChecker(),
       };
 
-      const getContext = () => {
-        const program =
-          (info.project['program'] as ts.Program | undefined) ?? ctx.program;
+      const getContext = (): TSContext | TSContextBase => {
+        const program = info.project['program'] as ts.Program | undefined;
+        if (!program) return ctxBase;
         return {
-          ...ctx,
+          ...ctxBase,
           program,
           typeChecker: program.getTypeChecker(),
         };
       };
 
-      const options = readOptions(ctx);
+      const options = readOptions(ctxBase);
 
       logger(`Options parsed`);
       logger(options);
@@ -55,7 +51,7 @@ const init = (modules: { typescript: tss }) => {
 
       logger(`Using tamagui config path: ${tamaguiConfigFilePath}`);
 
-      const tamaguiConfig = readConfig(options, ctx);
+      const tamaguiConfig = readConfig(options, ctxBase);
 
       if (!tamaguiConfig) {
         logger.error(`Tamagui config was not parsed.`);

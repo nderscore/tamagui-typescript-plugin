@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { TSContext } from './types';
+import { TSContextBase } from './types';
 
 const normalizeFilter = (token: string) =>
   token.startsWith('$') ? token : `$${token}`;
@@ -48,7 +48,7 @@ export const createCustomTokenFilter = ({
 /**
  * Read options passed in from the tsconfig.json file
  */
-export const readOptions = ({ info, modules }: TSContext) => {
+export const readOptions = ({ info, modules }: TSContextBase) => {
   const {
     pathToApp = 'apps/next',
     defaultTheme = 'light',

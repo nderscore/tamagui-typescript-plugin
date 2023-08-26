@@ -1,7 +1,7 @@
 import type { TamaguiInternalConfig } from '@tamagui/core';
 
 import { PluginOptions } from './readOptions';
-import { TSContext } from './types';
+import { TSContextBase } from './types';
 
 type Themes = TamaguiInternalConfig['themes'];
 
@@ -93,7 +93,7 @@ const getThemeColors = (
  */
 export const readConfig = (
   options: PluginOptions,
-  { modules, logger }: TSContext
+  { modules, logger }: TSContextBase
 ) => {
   const { tamaguiConfigFilePath } = options;
   const tamaguiConfigFile = modules.typescript.sys.readFile(
