@@ -47,10 +47,6 @@ const init = (modules: { typescript: tss }) => {
       logger(`Options parsed`);
       logger(options);
 
-      const { defaultTheme, tamaguiConfigFilePath } = options;
-
-      logger(`Using tamagui config path: ${tamaguiConfigFilePath}`);
-
       const tamaguiConfig = readConfig(options, ctxBase);
 
       if (!tamaguiConfig) {
@@ -76,6 +72,8 @@ const init = (modules: { typescript: tss }) => {
       }
 
       Object.assign(proxy, languageServerHooks);
+
+      const { tamaguiConfigFilePath } = options;
 
       logger(`Setting up watcher for <${tamaguiConfigFilePath}>`);
 

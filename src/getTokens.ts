@@ -25,6 +25,21 @@ const getNodeTreeAtPosition = (
 };
 
 /**
+ * Determines whether a given type is a TamaguiComponent or similar type
+ */
+const isTamaguiComponentType = (nodeType: ts.Type) => {
+  if (nodeType.aliasSymbol?.escapedName === 'TamaguiComponent') {
+    // styled() component
+    return true;
+  }
+  if (nodeType.getProperty('staticConfig')) {
+    // styleable() component
+    return true;
+  }
+  return false;
+};
+
+/**
  * Determines whether to show tamagui completions at a given position and if
  * so, which type of tokens to show.
  *
@@ -32,8 +47,8 @@ const getNodeTreeAtPosition = (
  * a descendant of a node that is one of the following:
  *
  * - A property assignment inside a Tamagui styled() call
- * - A property assignment inside a JSX expression
- * - Or a JSX attribute
+ * - A property assignment inside a Tamagui JSX element
+ * - Or a JSX attribute inside a Tamagui JSX element
  *
  * If a valid property assignment or JSX attribute is found, it's name
  * determines the token type based on the property name.
@@ -54,68 +69,81 @@ const getTokenAtPosition = (
 
   let i = nodeTree.length - 1;
   const originNode = nodeTree[i];
-  let styledNode: ts.Node | undefined;
-  let jsxAttributeNode: ts.Node | undefined;
-  let propertyAssignmentNode: ts.Node | undefined;
   let valueNode: ts.Node | undefined;
 
-  let node: ts.Node | undefined;
-  while (!jsxAttributeNode && !styledNode && i >= 0) {
+  let isInTamaguiScope = false;
+  let prop = '';
+  let value = '';
+
+  let node: ts.Node;
+  let done = false;
+  while (!done && i >= 0) {
     node = nodeTree[i--]!;
-    const nodeType = typeChecker.getTypeAtLocation(node);
-    if (!valueNode && nodeType.isStringLiteral()) {
-      // is string literal
+    const nodeType = ctx.typeChecker.getTypeAtLocation(node);
+    const isStringLiteral = nodeType.isStringLiteral();
+
+    const isJsxAttribute = node.kind === ts.SyntaxKind.JsxAttribute;
+    const isPropertyAssignment = node.kind === ts.SyntaxKind.PropertyAssignment;
+    const isJsxOpeningElement = node.kind === ts.SyntaxKind.JsxOpeningElement;
+    const isJsxSelfClosingElement =
+      node.kind === ts.SyntaxKind.JsxSelfClosingElement;
+    const isCallExpression = node.kind === ts.SyntaxKind.CallExpression;
+    const isStyledCall =
+      isCallExpression && node.getChildAt(0).getText() === 'styled';
+
+    // logger(`
+    //   node <${node.getText()}>
+    //   nodeKind <${node.kind}>
+    //   nodeType <${nodeType.aliasSymbol?.escapedName}>
+    //   nodeTypeFlags <${nodeType.flags.toString()}>
+    //   isJsxAttribute <${isJsxAttribute}>
+    //   isPropertyAssignment <${isPropertyAssignment}>
+    //   isJsxOpeningElement <${isJsxOpeningElement}>
+    //   isJsxSelfClosingElement <${isJsxSelfClosingElement}>
+    //   isCallExpression <${isCallExpression}>
+    //   isStyledCall <${isStyledCall}>
+    // `);
+
+    if (!prop && !valueNode && isStringLiteral) {
       valueNode = node;
+      if (isJsxAttribute) {
+        value = node.getChildAt(2).getText();
+      } else {
+        value = node.getText();
+      }
     }
-    if (
-      !propertyAssignmentNode &&
-      node.kind === ts.SyntaxKind.PropertyAssignment
-    ) {
-      // is property assignment
-      propertyAssignmentNode = node;
+    if (!prop && isPropertyAssignment) {
+      prop = node.getChildAt(0).getText();
     }
-    if (
-      node.kind === ts.SyntaxKind.JsxAttribute ||
-      node.kind === ts.SyntaxKind.JsxSpreadAttribute
-    ) {
-      // is inside jsx attribute or jsx spread attribute
-      jsxAttributeNode = node;
+    if (!prop && isJsxAttribute) {
+      prop = node.getChildAt(0).getText();
     }
-    if (nodeType.aliasSymbol?.escapedName === 'TamaguiComponent') {
-      // is inside styled() call
-      styledNode = node;
+    if (isJsxOpeningElement || isJsxSelfClosingElement) {
+      done = true;
+      const tagName = node.getChildAt(1);
+      const tagType = typeChecker.getTypeAtLocation(tagName);
+      const isTamaguiComponentTag = isTamaguiComponentType(tagType);
+      if (isTamaguiComponentTag) {
+        isInTamaguiScope = true;
+      } else {
+        logger(`Non tamagui component type <${node.getText()}>`);
+      }
+    }
+    if (isStyledCall) {
+      done = true;
+      isInTamaguiScope = true;
     }
   }
 
-  const isTamaguiPropertyAssignment = !!(
-    propertyAssignmentNode &&
-    (jsxAttributeNode || styledNode)
-  );
-
-  const isJsxAttribute = !!jsxAttributeNode;
-
   logger(`Origin node <${originNode?.getText()}>`);
-  logger(`isTamaguiPropertyAssignment <${isTamaguiPropertyAssignment}>`);
-  logger(`isJsxAttribute <${isJsxAttribute}>`);
   logger(`Value node <${valueNode?.getText()}>`);
+  logger(`Prop <${prop}>`);
+  logger(`Value <${value}>`);
+  logger(`Detected tamagui scope <${isInTamaguiScope}>`);
 
-  if (!isTamaguiPropertyAssignment && !isJsxAttribute) return undefined;
+  if (!isInTamaguiScope || !prop) return undefined;
 
-  const propMatch = isTamaguiPropertyAssignment
-    ? propertyAssignmentNode!.getText().match(/^(\w+):/)
-    : jsxAttributeNode!.getText().match(/^(\w+)=/);
-  const propName = propMatch?.[1] ?? '';
-
-  logger(`Prop name <${propName}>`);
-
-  if (!propName) return undefined;
-
-  const valueText =
-    valueNode?.kind === ts.SyntaxKind.JsxAttribute
-      ? valueNode?.getText().replace(`${propName}=`, '')
-      : valueNode?.getText();
-
-  return [propName, valueText, valueNode] as const;
+  return [prop, value, valueNode] as const;
 };
 
 export const getTokenType = (
