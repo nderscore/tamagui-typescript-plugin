@@ -1,3 +1,13 @@
+#### 0.5.4 (2023-08-27)
+
+##### Bug Fixes
+
+- avoid calling getProgram during initialization ([adb57ded](https://github.com/nderscore/tamagui-typescript-plugin/commit/adb57ded9017953db1ca7f459d9eb1a67b2e3ab0))
+
+##### Refactors
+
+- improved prop/value extraction and tamagui component detection ([f78ef9ea](https://github.com/nderscore/tamagui-typescript-plugin/commit/f78ef9ea191e7c6356d29bb35bbe587abce0db6d))
+
 #### 0.5.3 (2023-08-24)
 
 ##### Bug Fixes
