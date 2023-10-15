@@ -1,13 +1,16 @@
 import type ts from 'typescript/lib/tsserverlibrary';
 
 import { getTokenType } from './getTokens';
+import { handleTagEntry } from './handleTagEntry';
 import {
   makeColorTokenDescription,
+  makeShorthandDescription,
   makeThemeTokenDescription,
   makeTokenDescription,
 } from './metadata';
 import { ParsedConfig } from './readConfig';
 import { PluginOptions } from './readOptions';
+import { TAMAGUI_SHORTHAND_TAG } from './TamaguiTags';
 import { TSContext } from './types';
 import {
   getMaybeSpecificToken,
@@ -48,13 +51,33 @@ export const getCompletionDetails = (
 
   logger(`calculating tamagui completion details <$${position}@${fileName}>`);
 
-  const type = getTokenType(fileName, position, config, ctx);
+  const tokenType = getTokenType(fileName, position, config, ctx);
 
-  if (!type) return original;
+  if (!tokenType) return original;
+  const { type, shorthand, prop, isShorthand } = tokenType;
 
   logger(`token type <${type}>`);
 
   const sanitizedEntryName = sanitizeMaybeQuotedString(entryName);
+
+  if (
+    isShorthand &&
+    shorthand &&
+    options.completionFilters.showShorthandConversion
+  ) {
+    handleTagEntry(
+      {
+        name: TAMAGUI_SHORTHAND_TAG,
+        text: [
+          {
+            kind: 'markdown',
+            text: makeShorthandDescription(shorthand, prop),
+          },
+        ],
+      },
+      original
+    );
+  }
 
   if (type === 'color') {
     const themeValue = config.themeColors[sanitizedEntryName];

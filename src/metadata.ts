@@ -68,6 +68,10 @@ export const makeColorTokenDescription = (
   ]);
 };
 
+export const makeShorthandDescription = (shorthand: string, prop: string) => {
+  return `\`${shorthand}\` is short for \`${prop}\``;
+};
+
 const formatThemePrefix = (key: string) => {
   return key.replace(/([A-Za-z0-9]+)(?:_|$)/g, (_, key) => toPascal(key));
 };
