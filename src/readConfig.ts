@@ -80,8 +80,8 @@ const getThemeColors = (
       if (key === 'id') continue;
       const $key = `$${key}`;
       themeTokens[$key] ??= {};
-      themeTokens[$key]![themeName] =
-        variable.val ?? (variable as unknown as string);
+      themeTokens[$key]![themeName as string] = (variable.val ??
+        variable) as unknown as string;
     }
   }
 
