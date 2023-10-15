@@ -20,6 +20,8 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 
 - Granular filtering options for autocomplete suggestions
 
+- Translations for shorthand properties (e.g. `p` -> `padding`)
+
 - Smart sorting of autocomplete suggestions:
 
   - Tokens with numbers get sorted in numeric order
@@ -43,6 +45,8 @@ Typescript Language Server Plugin for [Tamagui](https://tamagui.dev).
 ![Quick Info Color Hover Screenshot](./docs/screenshot_quickinfo_color.png)
 
 ![Quick Info Space Hover Screenshot](./docs/screenshot_quickinfo_space.png)
+
+![Quick Info Shorthand Hover Screenshot](./docs/screenshot_quickinfo_shorthand.png)
 
 ##### Sorted space tokens
 
@@ -83,6 +87,9 @@ See the [changelog](./CHANGELOG.md) for the latest changes.
            //
            // the size (in pixels) of color tiles in previews
            "colorTileSize": 18,
+           //
+           // set false to hide translations for shorthand properties
+           "showShorthandTranslations": true,
            //
            // options for filtering autocomplete suggestions
            "completionFilters": {
