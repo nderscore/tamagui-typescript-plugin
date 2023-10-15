@@ -1,3 +1,9 @@
+### 0.6.0 (2023-10-15)
+
+##### New Features
+
+- add real prop translations for shorthands (thanks @kaceycleveland) ([ee56aaaa](https://github.com/nderscore/tamagui-typescript-plugin/commit/ee56aaaa586218daea62ebbc79496bfe5d1f1a13))
+
 #### 0.5.4 (2023-08-27)
 
 ##### Bug Fixes
