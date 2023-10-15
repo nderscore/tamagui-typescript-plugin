@@ -1,7 +1,6 @@
 import ts from 'typescript/lib/tsserverlibrary';
 
 import { getTokenWithValue } from './getTokens';
-import { handleTagEntry } from './handleTagEntry';
 import {
   makeColorTokenDescription,
   makeShorthandDescription,
@@ -10,7 +9,7 @@ import {
 } from './metadata';
 import { ParsedConfig } from './readConfig';
 import { PluginOptions } from './readOptions';
-import { TAMAGUI_SHORTHAND_TAG } from './TamaguiTags';
+import { safeInsertDocs } from './safeInsertDocs';
 import { TSContext } from './types';
 import {
   getMaybeSpecificToken,
@@ -49,7 +48,7 @@ export const getQuickInfo = (
 
   logger(`found token <${entryName}> of type <${type}>`);
 
-  let found = false;
+  let touched = false;
   const result: ts.QuickInfo = original ?? {
     kind: ts.ScriptElementKind.string,
     kindModifiers: '',
@@ -58,57 +57,48 @@ export const getQuickInfo = (
 
   const sanitizedEntryName = sanitizeMaybeQuotedString(entryName);
 
-  if (
-    isShorthand &&
-    shorthand &&
-    options.completionFilters.showShorthandConversion
-  ) {
-    handleTagEntry(
-      {
-        name: TAMAGUI_SHORTHAND_TAG,
-        text: [
-          {
-            kind: 'markdown',
-            text: makeShorthandDescription(shorthand, prop),
-          },
-        ],
-      },
-      result
+  if (isShorthand && shorthand && options.showShorthandTranslations) {
+    safeInsertDocs(
+      result,
+      'shorthand',
+      makeShorthandDescription(shorthand, prop)
     );
+    touched = true;
   }
 
+  let foundThemeColor = false;
   if (type === 'color') {
     const themeValue = config.themeColors[sanitizedEntryName];
     if (themeValue) {
       result.kindModifiers = 'color';
-      result.documentation ??= [];
-      result.documentation.unshift({
-        kind: 'markdown',
-        text: makeThemeTokenDescription(themeValue, options),
-      });
-      found = true;
+      safeInsertDocs(
+        result,
+        'token',
+        makeThemeTokenDescription(themeValue, options)
+      );
+      foundThemeColor = true;
+      touched = true;
     }
   }
 
-  if (found) return result;
-
-  const [scale, value] = getMaybeSpecificToken(entryName, type, config);
+  const [scale, value] = !foundThemeColor
+    ? getMaybeSpecificToken(entryName, type, config)
+    : [];
   if (scale && value) {
     const isColor = scale === 'color';
     if (isColor) {
       result.kindModifiers = 'color';
     }
-    result.documentation ??= [];
-    result.documentation.unshift({
-      kind: 'markdown',
-      text: isColor
+    safeInsertDocs(
+      result,
+      'token',
+      isColor
         ? makeColorTokenDescription(value, options)
-        : makeTokenDescription(toPascal(scale), value),
-    });
-    found = true;
+        : makeTokenDescription(toPascal(scale), value)
+    );
+    touched = true;
   }
 
-  if (found) return result;
-
-  return original;
+  // avoid returning our custom result if we didn't touch it
+  return touched ? result : original;
 };

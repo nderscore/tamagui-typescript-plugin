@@ -69,7 +69,7 @@ export const makeColorTokenDescription = (
 };
 
 export const makeShorthandDescription = (shorthand: string, prop: string) => {
-  return `\`${shorthand}\` is short for \`${prop}\``;
+  return `\`${shorthand}\` is shorthand for \`${prop}\``;
 };
 
 const formatThemePrefix = (key: string) => {
