@@ -56,6 +56,7 @@ export const readOptions = ({ info, modules }: TSContextBase) => {
     completionFilters: {
       showColorTokens = true,
       showTrueTokens = true,
+      showShorthandConversion = true,
       custom: {
         themeColor: themeColorFilters = undefined,
         color: colorFilters = undefined,
@@ -72,6 +73,7 @@ export const readOptions = ({ info, modules }: TSContextBase) => {
     completionFilters?: {
       showColorTokens?: boolean;
       showTrueTokens?: boolean;
+      showShorthandConversion?: boolean;
       custom?: {
         themeColor?: string[];
         color?: string[];
@@ -100,6 +102,7 @@ export const readOptions = ({ info, modules }: TSContextBase) => {
     completionFilters: {
       showColorTokens,
       showTrueTokens,
+      showShorthandConversion,
       custom: createCustomTokenFilter({
         themeColor: themeColorFilters,
         color: colorFilters,

@@ -37,9 +37,10 @@ export const getCompletions = (
 
   logger(`calculating tamagui completions <$${position}@${fileName}>`);
 
-  const type = getTokenType(fileName, position, config, ctx);
+  const tokenType = getTokenType(fileName, position, config, ctx);
 
-  if (!type) return original;
+  if (!tokenType) return original;
+  const { type } = tokenType;
 
   logger(`token type <${type}>`);
 
