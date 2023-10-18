@@ -1,5 +1,6 @@
 import ts from 'typescript/lib/tsserverlibrary';
 
+import { getVariantsType } from './getVariantsType';
 import { mapPropToToken } from './mapPropToToken';
 import { ParsedConfig } from './readConfig';
 import { TSContext } from './types';
@@ -72,8 +73,10 @@ const getTokenAtPosition = (
   let valueNode: ts.Node | undefined;
 
   let isInTamaguiScope = false;
+  let tagNode: ts.Node | undefined;
   let prop = '';
   let value = '';
+  let variantType: ts.Type | undefined;
 
   let node: ts.Node;
   let done = false;
@@ -120,9 +123,10 @@ const getTokenAtPosition = (
     }
     if (isJsxOpeningElement || isJsxSelfClosingElement) {
       done = true;
-      const tagName = node.getChildAt(1);
-      const tagType = typeChecker.getTypeAtLocation(tagName);
+      tagNode = node.getChildAt(1);
+      const tagType = typeChecker.getTypeAtLocation(tagNode);
       const isTamaguiComponentTag = isTamaguiComponentType(tagType);
+      variantType = getVariantsType(tagType, tagNode, ctx);
       if (isTamaguiComponentTag) {
         isInTamaguiScope = true;
       } else {
@@ -135,15 +139,18 @@ const getTokenAtPosition = (
     }
   }
 
+  logger(`Tag name <${tagNode?.getText()}>`);
   logger(`Origin node <${originNode?.getText()}>`);
   logger(`Value node <${valueNode?.getText()}>`);
   logger(`Prop <${prop}>`);
   logger(`Value <${value}>`);
+  logger(`Has variant type <${Boolean(variantType)}>`);
   logger(`Detected tamagui scope <${isInTamaguiScope}>`);
 
-  if (!isInTamaguiScope || !prop) return undefined;
+  // TODO: Remove !prop to detect component highlights
+  if (!isInTamaguiScope) return undefined;
 
-  return [prop, value, valueNode] as const;
+  return [prop, value, originNode, valueNode, variantType] as const;
 };
 
 export const getTokenType = (
@@ -166,14 +173,17 @@ export const getTokenWithValue = (
 ) => {
   const tokenMatch = getTokenAtPosition(fileName, position, ctx);
   if (!tokenMatch) return undefined;
-  const [prop, value, node] = tokenMatch;
-  if (!value || !node) return undefined;
+  const [prop, value, originNode, valueNode, variantType] = tokenMatch;
   return [
     mapPropToToken(prop, config),
     value,
-    {
-      start: node.end - value.length,
-      length: value.length,
-    },
+    valueNode
+      ? {
+          start: valueNode.end - value.length,
+          length: value.length,
+        }
+      : { start: 0, length: 0 },
+    originNode,
+    variantType,
   ] as const;
 };
