@@ -6,6 +6,7 @@ import {
   makeShorthandDescription,
   makeThemeTokenDescription,
   makeTokenDescription,
+  makeVariantsSummary,
 } from './metadata';
 import { ParsedConfig } from './readConfig';
 import { PluginOptions } from './readOptions';
@@ -41,8 +42,13 @@ export const getQuickInfo = (
 
   if (!tokenResult) return original;
 
-  const [{ type, isShorthand, shorthand, prop }, entryName, textSpan] =
-    tokenResult;
+  const [
+    { type, isShorthand, shorthand, prop },
+    entryName,
+    textSpan,
+    originNode,
+    variantsType,
+  ] = tokenResult;
 
   logger(`Logging shorthand and prop ${shorthand} ${prop}`);
 
@@ -64,6 +70,17 @@ export const getQuickInfo = (
       makeShorthandDescription(shorthand, prop)
     );
     touched = true;
+  }
+
+  if (variantsType && originNode) {
+    logger(`Inserting variant docs`);
+    const variantDocs = makeVariantsSummary(
+      variantsType,
+      originNode,
+      ctx.typeChecker
+    );
+    logger(variantDocs);
+    safeInsertDocs(result, 'variantDocs', variantDocs);
   }
 
   let foundThemeColor = false;

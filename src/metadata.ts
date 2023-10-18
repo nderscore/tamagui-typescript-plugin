@@ -1,4 +1,5 @@
 import color from 'color';
+import ts from 'typescript/lib/tsserverlibrary';
 
 import { PluginOptions } from './readOptions';
 import { toPascal } from './utils';
@@ -112,4 +113,32 @@ export const makeThemeTokenDescription = (
   }
 
   return makeTable(table);
+};
+
+export const makeVariantsSummary = (
+  type: ts.Type,
+  node: ts.Node,
+  typeChecker: ts.TypeChecker
+) => {
+  const variantsSummary = type.getProperties().map((symbol) => {
+    const variantType = typeChecker.getTypeOfSymbolAtLocation(symbol, node);
+
+    const variantName = symbol.escapedName;
+    const variantTypeString = typeChecker.typeToString(variantType, node);
+    const variantComment = ts
+      .displayPartsToString(symbol.getDocumentationComment(typeChecker))
+      .trim();
+    const variantSourceFiles = symbol.declarations
+      ?.map((d) => d.getSourceFile())
+      ?.map((file) => file.fileName);
+
+    const parsedTypeLink =
+      variantSourceFiles && variantSourceFiles.length
+        ? `([${variantTypeString}](file://${variantSourceFiles[0]}))`
+        : `(${variantTypeString})`;
+
+    return `**${variantName}** ${parsedTypeLink}\n\n${variantComment}\n\n---\n`;
+  });
+
+  return ['## Variants\n', ...variantsSummary].join('\n');
 };
